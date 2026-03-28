@@ -1,0 +1,2401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kruskal's MST Teaching Tool</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --bg-soft: #080808;
+      --panel: #101010;
+      --panel-2: #1a1a1a;
+      --line: rgba(223, 230, 238, 0.18);
+      --text: #f7f9fc;
+      --muted: #c6d2de;
+      --accent: #5b8def;
+      --accent-2: #f0b44c;
+      --good: #66bb6a;
+      --bad: #e57373;
+      --focus: #89b4ff;
+      --violet: #9b8fd6;
+      --shadow: 0 8px 16px rgba(0, 0, 0, 0.14);
+      --transition: 180ms ease;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: #000000;
+      color: var(--text);
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: minmax(340px, 420px) minmax(0, 1fr);
+      gap: 16px;
+      padding: 16px;
+      min-height: 100vh;
+    }
+
+    .panel {
+      background: rgba(10, 10, 10, 0.98);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .controls .panel {
+      padding: 16px;
+    }
+
+    .visuals {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      gap: 14px;
+      align-content: start;
+    }
+
+    .visuals .wide {
+      grid-column: 1 / -1;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0 0 10px;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: clamp(1.7rem, 2vw, 2.2rem);
+    }
+
+    h2 {
+      font-size: 1.15rem;
+    }
+
+    h3 {
+      font-size: 1rem;
+    }
+
+    p {
+      margin: 0;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .hero {
+      padding: 18px;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0 0;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .badge.status-idle { background: rgba(156, 183, 209, 0.13); border-color: rgba(156, 183, 209, 0.22); }
+    .badge.status-ready { background: rgba(82, 212, 200, 0.13); border-color: rgba(82, 212, 200, 0.22); }
+    .badge.status-playing { background: rgba(243, 180, 77, 0.15); border-color: rgba(243, 180, 77, 0.22); }
+    .badge.status-paused { background: rgba(125, 157, 255, 0.15); border-color: rgba(125, 157, 255, 0.22); }
+    .badge.status-done { background: rgba(118, 211, 124, 0.15); border-color: rgba(118, 211, 124, 0.22); }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(181, 202, 223, 0.12);
+    }
+
+    .section-title h2,
+    .section-title h3 {
+      font-weight: 700;
+    }
+
+    textarea,
+    input[type="range"] {
+      width: 100%;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 112px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #050505;
+      color: var(--text);
+      padding: 12px 14px;
+      font: 0.96rem/1.5 "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+    }
+
+    textarea:hover {
+      border-color: rgba(191, 211, 255, 0.42);
+    }
+
+    textarea:focus,
+    button:focus,
+    input:focus,
+    summary:focus {
+      outline: 2px solid rgba(117, 183, 255, 0.72);
+      outline-offset: 2px;
+    }
+
+    textarea:focus {
+      box-shadow: 0 0 0 3px rgba(91, 141, 239, 0.14);
+      background: #090909;
+    }
+
+    .helper {
+      margin-top: 10px;
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    .preset-grid,
+    .button-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    button {
+      border: 2px solid #8fb7e1;
+      background: #5b8def;
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      min-height: 44px;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #3d63aa;
+      transition: background var(--transition), border-color var(--transition), opacity var(--transition), transform var(--transition);
+    }
+
+    button:hover:not(:disabled) {
+      border-color: #d5e4f5;
+      background: #6f9df2;
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    button.secondary {
+      background: #58779a;
+      border-color: #c1d3ea;
+      box-shadow: 0 3px 0 #3f566d;
+    }
+
+    #buildBtn {
+      background: #5b8def;
+      border-color: #d8e5ff;
+      box-shadow: 0 3px 0 #4469b2;
+    }
+
+    #stepBtn {
+      background: #7a97f2;
+      border-color: #d8e2ff;
+      box-shadow: 0 3px 0 #5d74b8;
+    }
+
+    #playBtn {
+      background: #63b66d;
+      border-color: #d5f0d8;
+      box-shadow: 0 3px 0 #44834c;
+    }
+
+    #pauseBtn {
+      background: #efb458;
+      border-color: #ffebc2;
+      box-shadow: 0 3px 0 #b07c29;
+      color: #2a2a2a;
+    }
+
+    #resetBtn {
+      background: #8d98a5;
+      border-color: #e1e6eb;
+      box-shadow: 0 3px 0 #67717a;
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+    }
+
+    .speed-row,
+    .status-grid,
+    .impact-grid,
+    .greedy-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .speed-label,
+    .status-card strong,
+    .stat-card strong,
+    .impact-card strong,
+    .concept strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .status-grid,
+    .stats-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .status-card,
+    .stat-card,
+    .impact-card,
+    .concept {
+      background: #0d0d0d;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 14px;
+      min-width: 0;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .stat-value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .stat-card small,
+    .status-card span {
+      color: var(--muted);
+    }
+
+    details {
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #0d0d0d;
+      overflow: hidden;
+    }
+
+    details + details {
+      margin-top: 10px;
+    }
+
+    summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 12px 14px;
+      font-weight: 700;
+      color: var(--text);
+      position: relative;
+      background: #161616;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      transition: background var(--transition);
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    summary::after {
+      content: "+";
+      position: absolute;
+      right: 16px;
+      top: 10px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #eff5fb;
+    }
+
+    details[open] summary::after {
+      content: "−";
+    }
+
+    summary:hover {
+      background: #222222;
+    }
+
+    .details-body {
+      padding: 0 16px 16px;
+      color: var(--muted);
+      display: grid;
+      gap: 10px;
+      line-height: 1.55;
+    }
+
+    .details-body ol,
+    .details-body ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 9px;
+      background: #111111;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .viz-panel {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .viz-copy {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+
+    .viz-copy p {
+      max-width: 600px;
+    }
+
+    svg {
+      width: 100%;
+      display: block;
+      background: #000000;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+    }
+
+    .mono {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 8px;
+      padding: 5px 8px;
+      background: #111111;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    input[type="range"] {
+      appearance: none;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(91, 141, 239, 0.7), rgba(255, 255, 255, 0.16));
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2px solid #5b8def;
+      cursor: pointer;
+      box-shadow: 0 0 0 3px rgba(91, 141, 239, 0.18);
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(91, 141, 239, 0.7), rgba(255, 255, 255, 0.16));
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2px solid #5b8def;
+      cursor: pointer;
+      box-shadow: 0 0 0 3px rgba(91, 141, 239, 0.18);
+    }
+
+    .pseudo-wrap {
+      display: grid;
+      gap: 12px;
+    }
+
+    .pseudo-panel {
+      max-height: 340px;
+      overflow: auto;
+      padding: 10px;
+      background: #050505;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      scrollbar-width: thin;
+      scrollbar-color: #5b8def #111111;
+    }
+
+    .code-line {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 8px 10px;
+      border-radius: 8px;
+      color: var(--muted);
+      border: 1px dashed transparent;
+      transition: background var(--transition), color var(--transition), transform var(--transition), border-color var(--transition);
+      cursor: help;
+    }
+
+    .code-line + .code-line {
+      margin-top: 3px;
+    }
+
+    .code-line.active {
+      background: rgba(77, 183, 167, 0.18);
+      color: var(--text);
+      transform: translateX(1px);
+    }
+
+    .code-line:hover {
+      background: rgba(91, 141, 239, 0.18);
+      border-color: #bfd3ff;
+      color: var(--text);
+    }
+
+    .line-no {
+      color: rgba(156, 183, 209, 0.72);
+      text-align: right;
+    }
+
+    .explanation-box {
+      min-height: 128px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      padding: 16px;
+      background: #050505;
+      line-height: 1.6;
+    }
+
+    .history-wrap {
+      overflow: auto;
+      max-height: 330px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #050505;
+      scrollbar-width: thin;
+      scrollbar-color: #5b8def #111111;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+
+    th,
+    td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(149, 187, 219, 0.12);
+      font-size: 0.92rem;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: #141414;
+      z-index: 1;
+      color: var(--text);
+    }
+
+    tr.history-row {
+      cursor: pointer;
+      transition: background var(--transition);
+      border-left: 4px solid transparent;
+    }
+
+    tr.history-row:nth-child(even) {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    tr.history-row:hover {
+      background: rgba(79, 140, 201, 0.18);
+    }
+
+    tr.history-row.active {
+      background: rgba(102, 187, 106, 0.16);
+    }
+
+    tr.history-row:hover td,
+    tr.history-row.active td {
+      border-bottom-color: rgba(255, 255, 255, 0.18);
+    }
+
+    tr.history-row td:first-child {
+      font-weight: 700;
+      color: #f7f9fc;
+    }
+
+    tr.history-row td:first-child::before {
+      content: "↺ ";
+      color: #a9c9eb;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 8px;
+      padding: 5px 9px;
+      border: 1px solid var(--line);
+      font-size: 0.8rem;
+      background: #111111;
+    }
+
+    .tag.good {
+      color: var(--good);
+      border-color: rgba(118, 211, 124, 0.22);
+    }
+
+    .tag.bad {
+      color: var(--bad);
+      border-color: rgba(240, 109, 109, 0.22);
+    }
+
+    .tag.sort {
+      color: var(--accent-2);
+      border-color: rgba(243, 180, 77, 0.25);
+    }
+
+    .chart-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .chart-note {
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .impact-grid,
+    .greedy-grid {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .callout {
+      border-left: 4px solid var(--accent);
+      padding: 12px 14px;
+      background: rgba(77, 183, 167, 0.08);
+      border-radius: 0 10px 10px 0;
+      color: var(--muted);
+      line-height: 1.55;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .comparison {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .comparison > div {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: #0d0d0d;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .footer-note {
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    .error {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(240, 109, 109, 0.12);
+      border: 1px solid rgba(240, 109, 109, 0.2);
+      color: #ffd0d0;
+      display: none;
+    }
+
+    .error.show {
+      display: block;
+    }
+
+    .small {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .pseudo-panel::-webkit-scrollbar,
+    .history-wrap::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    .pseudo-panel::-webkit-scrollbar-track,
+    .history-wrap::-webkit-scrollbar-track {
+      background: #101010;
+    }
+
+    .pseudo-panel::-webkit-scrollbar-thumb,
+    .history-wrap::-webkit-scrollbar-thumb {
+      background: #315fad;
+      border-radius: 999px;
+      border: 2px solid #101010;
+    }
+
+    @media (max-width: 980px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .visuals {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="controls">
+      <section class="panel hero">
+        <h1>Kruskal's MST</h1>
+        <p>Interactive single-file tool for Kruskal's Minimum Spanning Tree. It shows sorting, Union-Find, MST building, and the CLO sections required in the assignment.</p>
+      </section>
+
+      <section class="panel">
+        <div class="section-title">
+          <h2>Control Panel</h2>
+        </div>
+        <label for="edgeInput"><strong>Custom edge list</strong></label>
+        <textarea id="edgeInput" spellcheck="false">A-B:4, A-C:3, B-C:1, B-D:2, C-D:4, C-E:5, D-E:1</textarea>
+        <div class="helper">Format: <span class="mono">A-B:4, B-C:2, C-D:7</span>. Use commas, semicolons, or new lines.</div>
+        <div class="error" id="inputError"></div>
+        <div class="section-title" style="margin-top:14px; margin-bottom:10px;">
+          <h3>Preset Graphs</h3>
+        </div>
+        <div class="preset-grid" id="presetButtons"></div>
+        <div class="speed-row" style="margin-top:16px;">
+          <div class="section-title" style="margin-bottom:4px;">
+            <label class="speed-label" for="speedSlider"><strong>Speed</strong></label>
+            <span id="speedValue" class="pill">1.00x</span>
+          </div>
+          <input id="speedSlider" type="range" min="0.25" max="4" step="0.25" value="1">
+        </div>
+        <div class="button-row" style="margin-top:16px;">
+          <button id="buildBtn">Build Steps</button>
+          <button id="stepBtn" class="secondary" disabled>Step</button>
+          <button id="playBtn" class="secondary" disabled>Play</button>
+          <button id="pauseBtn" class="secondary" disabled>Pause</button>
+          <button id="resetBtn" class="secondary" disabled>Reset</button>
+        </div>
+        <div class="status-grid" style="margin-top:16px;">
+          <div class="status-card">
+            <strong>Step Counter</strong>
+            <span id="stepCounter">0 / 0</span>
+          </div>
+          <div class="status-card">
+            <strong>Status</strong>
+            <span id="statusBadge" class="badge status-idle">Idle</span>
+          </div>
+          <div class="status-card">
+            <strong>MST Weight</strong>
+            <span id="mstWeight">0</span>
+          </div>
+          <div class="status-card">
+            <strong>Forest Components</strong>
+            <span id="componentCount">0</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title">
+          <h2>Statistics</h2>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card"><strong>Sort Comparisons</strong><div class="stat-value" id="sortComparisons">0</div><small>Animated edge ordering</small></div>
+          <div class="stat-card"><strong>Sort Writes</strong><div class="stat-value" id="sortWrites">0</div><small>Merge placements</small></div>
+          <div class="stat-card"><strong>Find Operations</strong><div class="stat-value" id="findOps">0</div><small>Union-Find searches</small></div>
+          <div class="stat-card"><strong>Path Compressions</strong><div class="stat-value" id="pathCompressions">0</div><small>Flattening the trees</small></div>
+          <div class="stat-card"><strong>Unions</strong><div class="stat-value" id="unionOps">0</div><small>Successful merges</small></div>
+          <div class="stat-card"><strong>Edges Accepted</strong><div class="stat-value" id="acceptedEdges">0</div><small>Current MST size</small></div>
+          <div class="stat-card"><strong>Edges Rejected</strong><div class="stat-value" id="rejectedEdges">0</div><small>Cycle prevention</small></div>
+          <div class="stat-card"><strong>Edges Inspected</strong><div class="stat-value" id="inspectedEdges">0</div><small>Main loop progress</small></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title">
+          <h2>CLO-1: Complexity Analysis</h2>
+        </div>
+        <div class="chart-controls">
+          <label for="chartSizeSlider"><strong>Largest graph size in chart</strong></label>
+          <span id="chartSizeLabel" class="pill">10 vertices</span>
+        </div>
+        <input id="chartSizeSlider" type="range" min="5" max="12" step="1" value="10">
+        <svg id="growthChartSvg" viewBox="0 0 720 320" aria-label="Growth chart"></svg>
+        <div class="legend">
+          <span class="legend-item"><span class="swatch" style="background: var(--accent);"></span>Actual Kruskal ops</span>
+          <span class="legend-item"><span class="swatch" style="background: var(--accent-2);"></span>Scaled E log E</span>
+          <span class="legend-item"><span class="swatch" style="background: var(--violet);"></span>Prim (matrix) comparison</span>
+        </div>
+        <p class="chart-note" id="complexitySummary"></p>
+        <div class="callout" id="worstCaseCallout"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title">
+          <h2>CLO-2: Sorting and Searching</h2>
+        </div>
+        <div class="impact-grid">
+          <div class="impact-card">
+            <strong>Why sorting matters</strong>
+            <p id="impactSortingText"></p>
+          </div>
+          <div class="impact-card">
+            <strong>Why Union-Find matters</strong>
+            <p id="impactSearchingText"></p>
+          </div>
+        </div>
+        <div class="comparison" style="margin-top:12px;">
+          <div>
+            <strong>Typed order result</strong>
+            <p id="typedOrderResult" class="small"></p>
+          </div>
+          <div>
+            <strong>Kruskal result</strong>
+            <p id="kruskalResult" class="small"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title">
+          <h2>CLO-3: Greedy Paradigm</h2>
+        </div>
+        <div class="greedy-grid">
+          <div class="impact-card">
+            <strong>Greedy choice</strong>
+            <p id="greedyChoiceText"></p>
+          </div>
+          <div class="impact-card">
+            <strong>Different paradigm, worse answer</strong>
+            <p>A bad local-walk heuristic on the graph <span class="mono">A-B:1, B-C:9, A-C:2, C-D:1, B-D:2</span> can pick <span class="mono">A-B, B-C, C-D</span> for total 11. Kruskal picks <span class="mono">A-B, C-D, A-C</span> for total 4 because it always takes the lightest safe edge globally, not just the next edge from one vertex.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <details open>
+          <summary>Overview Section</summary>
+          <div class="details-body">
+            <p>Kruskal's algorithm builds a minimum spanning tree by sorting all edges from lightest to heaviest, then scanning that list once. Every time it finds an edge whose endpoints are in different components, it accepts that edge because it is safe by the cut property.</p>
+            <p>This tool shows three views at the same time: the graph itself, the sorted edge order, and the Union-Find forest. The teaching goal is to make every step visible instead of treating cycle detection as a black box.</p>
+            <p><strong>When to use it:</strong> weighted, undirected, connected graphs, especially when edges are easy to sort or when the graph is sparse.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Worked Example</summary>
+          <div class="details-body">
+            <ol>
+              <li>Load the preset <strong>Balanced Five</strong>. The tool sorts the edges to get <span class="mono">(B-C,1), (D-E,1), (B-D,2), (A-C,3), (A-B,4), (C-D,4), (C-E,5)</span>.</li>
+              <li>It accepts <span class="mono">B-C</span> and <span class="mono">D-E</span> because both connect separate components.</li>
+              <li>It accepts <span class="mono">B-D</span> because it joins the two components <span class="mono">{B,C}</span> and <span class="mono">{D,E}</span>.</li>
+              <li>It accepts <span class="mono">A-C</span> because A is still separate. Now all five vertices are connected with 4 edges, so the MST is complete.</li>
+              <li>The final MST weight is <span class="mono">1 + 1 + 2 + 3 = 7</span>.</li>
+            </ol>
+          </div>
+        </details>
+        <details>
+          <summary>Key Concepts and Common Mistakes</summary>
+          <div class="details-body">
+            <div class="concept"><strong>Cut Property</strong><span>The lightest edge crossing any cut is safe to add to some MST. This is the visual proof behind Kruskal's greedy choice.</span></div>
+            <div class="concept"><strong>Cycle Rejection</strong><span>If both endpoints already have the same root, that edge closes a cycle and must be skipped.</span></div>
+            <div class="concept"><strong>Common Mistake</strong><span>Picking the lightest edge adjacent to the last chosen edge is not enough. Kruskal compares across the whole sorted list.</span></div>
+            <div class="concept"><strong>Worst Case</strong><span>Dense graphs maximize <span class="mono">E</span>, so sorting dominates. That is why the dense preset is the worst-case demonstration here.</span></div>
+          </div>
+        </details>
+      </section>
+    </aside>
+
+    <main class="visuals">
+      <section class="panel viz-panel wide">
+        <div class="viz-copy">
+          <div>
+            <h2>Visualization Area</h2>
+            <p>Main animation: graph, edge order, and Union-Find update in sync. Colors show current edge, accepted edges, rejected edges, and the current cut-property highlight.</p>
+          </div>
+          <div class="legend">
+            <span class="legend-item"><span class="swatch" style="background: var(--accent-2);"></span>Current edge</span>
+            <span class="legend-item"><span class="swatch" style="background: var(--good);"></span>Accepted MST edge</span>
+            <span class="legend-item"><span class="swatch" style="background: var(--bad);"></span>Rejected cycle edge</span>
+            <span class="legend-item"><span class="swatch" style="background: var(--focus);"></span>Current cut</span>
+            <span class="legend-item"><span class="swatch" style="background: var(--violet);"></span>Merge-sort pointers</span>
+          </div>
+        </div>
+        <svg id="graphSvg" viewBox="0 0 760 420" aria-label="Graph visualization"></svg>
+      </section>
+
+      <section class="panel viz-panel">
+        <div class="viz-copy">
+          <div>
+            <h2>Sorted Edge Order</h2>
+            <p>Shows the sorting phase first, then keeps the final nondecreasing order while pointer <span class="mono">i</span> scans through it.</p>
+          </div>
+          <span class="small mono" id="edgeRibbonLabel">Awaiting steps</span>
+        </div>
+        <svg id="edgeOrderSvg" viewBox="0 0 760 210" aria-label="Edge order"></svg>
+      </section>
+
+      <section class="panel viz-panel">
+        <div class="viz-copy">
+          <div>
+            <h2>Union-Find Forest</h2>
+            <p>Roots are shown at the top of each component tree. Path compression flattens these trees; union by rank keeps them shallow.</p>
+          </div>
+          <span class="small mono" id="ufLabel">No parent links yet</span>
+        </div>
+        <svg id="unionFindSvg" viewBox="0 0 520 320" aria-label="Union find visualization"></svg>
+      </section>
+
+      <section class="panel viz-panel">
+        <div class="viz-copy">
+          <div>
+            <h2>Pseudocode Panel</h2>
+            <p>Hover any line for its role. The current line is highlighted and auto-scrolled during playback.</p>
+          </div>
+          <span class="small mono">Hover lines</span>
+        </div>
+        <div class="pseudo-wrap">
+          <div class="pseudo-panel" id="pseudocodePanel"></div>
+        </div>
+      </section>
+
+      <section class="panel viz-panel">
+        <div class="viz-copy">
+          <div>
+            <h2>Step Explanation Box</h2>
+            <p>Plain-English explanation with concrete edge values and component states.</p>
+          </div>
+          <span class="small" id="phaseLabel">Idle</span>
+        </div>
+        <div class="explanation-box" id="explanationBox">Build the steps to start the animation.</div>
+        <div class="callout" id="cutPropertyBox">When the algorithm is ready, this panel will explain the current cut-property reasoning.</div>
+      </section>
+
+      <section class="panel viz-panel wide">
+        <div class="viz-copy">
+          <div>
+            <h2>History Table</h2>
+            <p>Click any recent row to jump back to that snapshot. The table keeps the last 28 history events visible.</p>
+          </div>
+          <span class="small">Click rows to jump</span>
+        </div>
+        <div class="history-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Step</th>
+                <th>Phase</th>
+                <th>Edge</th>
+                <th>Action</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+        <p class="footer-note">Technology requirement satisfied: this entire tool is self-contained in one HTML file using HTML, CSS, vanilla JavaScript, and SVG only.</p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const PRESETS = [
+      {
+        id: "balanced",
+        name: "Balanced Five",
+        description: "Small worked example with clean MST growth.",
+        edgeText: "A-B:4, A-C:3, B-C:1, B-D:2, C-D:4, C-E:5, D-E:1"
+      },
+      {
+        id: "bridges",
+        name: "Bridge Heavy",
+        description: "Shows several cycle rejections after early good choices.",
+        edgeText: "A-B:2, A-C:6, B-C:3, B-D:4, C-D:1, C-E:5, D-E:2, D-F:7, E-F:3"
+      },
+      {
+        id: "ties",
+        name: "Tie Showcase",
+        description: "Multiple equal weights show that different safe choices can still lead to an MST.",
+        edgeText: "A-B:2, A-C:2, B-C:2, B-D:3, C-E:3, D-E:1, D-F:4, E-F:4"
+      },
+      {
+        id: "denseWorst",
+        name: "Dense Worst Case",
+        description: "Worst case for Kruskal here: many edges, many rejections, full sort dominates.",
+        edgeText: "A-B:9, A-C:4, A-D:7, A-E:10, A-F:8, B-C:6, B-D:3, B-E:11, B-F:5, C-D:2, C-E:12, C-F:13, D-E:1, D-F:14, E-F:15"
+      }
+    ];
+
+    const PSEUDOCODE = [
+      { line: 1, text: "sort edges E by nondecreasing weight", tip: "Kruskal starts by ordering every edge from lightest to heaviest." },
+      { line: 2, text: "for each vertex v in V: make-set(v)", tip: "Initially each vertex is its own component in the Union-Find forest." },
+      { line: 3, text: "T ← empty set", tip: "T will store the edges chosen for the minimum spanning tree." },
+      { line: 4, text: "for each edge (u, v) in sorted E:", tip: "Scan the sorted list once from lightest to heaviest." },
+      { line: 5, text: "  ru ← find(u)", tip: "Find the representative root of u's current component." },
+      { line: 6, text: "  rv ← find(v)", tip: "Find the representative root of v's current component." },
+      { line: 7, text: "  if ru ≠ rv", tip: "If the roots are different, the edge does not create a cycle." },
+      { line: 8, text: "    add (u, v) to T", tip: "This is the greedy safe edge, so include it in the MST." },
+      { line: 9, text: "    union(ru, rv)", tip: "Merge the two components using union by rank." },
+      { line: 10, text: "  else skip edge", tip: "Same root means the edge closes a cycle, so reject it." },
+      { line: 11, text: "return T", tip: "Once T has |V|-1 edges, the MST is complete." }
+    ];
+
+    const els = {
+      edgeInput: document.getElementById("edgeInput"),
+      inputError: document.getElementById("inputError"),
+      presetButtons: document.getElementById("presetButtons"),
+      speedSlider: document.getElementById("speedSlider"),
+      speedValue: document.getElementById("speedValue"),
+      buildBtn: document.getElementById("buildBtn"),
+      stepBtn: document.getElementById("stepBtn"),
+      playBtn: document.getElementById("playBtn"),
+      pauseBtn: document.getElementById("pauseBtn"),
+      resetBtn: document.getElementById("resetBtn"),
+      stepCounter: document.getElementById("stepCounter"),
+      statusBadge: document.getElementById("statusBadge"),
+      mstWeight: document.getElementById("mstWeight"),
+      componentCount: document.getElementById("componentCount"),
+      sortComparisons: document.getElementById("sortComparisons"),
+      sortWrites: document.getElementById("sortWrites"),
+      findOps: document.getElementById("findOps"),
+      pathCompressions: document.getElementById("pathCompressions"),
+      unionOps: document.getElementById("unionOps"),
+      acceptedEdges: document.getElementById("acceptedEdges"),
+      rejectedEdges: document.getElementById("rejectedEdges"),
+      inspectedEdges: document.getElementById("inspectedEdges"),
+      graphSvg: document.getElementById("graphSvg"),
+      edgeOrderSvg: document.getElementById("edgeOrderSvg"),
+      unionFindSvg: document.getElementById("unionFindSvg"),
+      pseudocodePanel: document.getElementById("pseudocodePanel"),
+      explanationBox: document.getElementById("explanationBox"),
+      historyBody: document.getElementById("historyBody"),
+      phaseLabel: document.getElementById("phaseLabel"),
+      cutPropertyBox: document.getElementById("cutPropertyBox"),
+      edgeRibbonLabel: document.getElementById("edgeRibbonLabel"),
+      ufLabel: document.getElementById("ufLabel"),
+      growthChartSvg: document.getElementById("growthChartSvg"),
+      chartSizeSlider: document.getElementById("chartSizeSlider"),
+      chartSizeLabel: document.getElementById("chartSizeLabel"),
+      complexitySummary: document.getElementById("complexitySummary"),
+      worstCaseCallout: document.getElementById("worstCaseCallout"),
+      impactSortingText: document.getElementById("impactSortingText"),
+      impactSearchingText: document.getElementById("impactSearchingText"),
+      typedOrderResult: document.getElementById("typedOrderResult"),
+      kruskalResult: document.getElementById("kruskalResult"),
+      greedyChoiceText: document.getElementById("greedyChoiceText")
+    };
+
+    const state = {
+      status: "Idle",
+      speed: 1,
+      graph: null,
+      snapshots: [],
+      events: [],
+      currentStep: 0,
+      playbackTimer: null
+    };
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function setStatus(status) {
+      state.status = status;
+      els.statusBadge.textContent = status;
+      els.statusBadge.className = "badge " + "status-" + status.toLowerCase();
+      els.phaseLabel.textContent = status;
+    }
+
+    function showError(message) {
+      els.inputError.textContent = message;
+      els.inputError.classList.add("show");
+    }
+
+    function clearError() {
+      els.inputError.textContent = "";
+      els.inputError.classList.remove("show");
+    }
+
+    function edgeLabel(edge) {
+      return edge ? `${edge.u}-${edge.v} (${edge.w})` : "—";
+    }
+
+    function parseGraph(text) {
+      const tokens = text
+        .split(/[\n,;]+/)
+        .map(token => token.trim())
+        .filter(Boolean);
+
+      if (!tokens.length) {
+        throw new Error("Enter at least one edge.");
+      }
+
+      const edges = [];
+      const vertexSet = new Set();
+      const seen = new Set();
+
+      tokens.forEach((token, index) => {
+        const match = token.match(/^([A-Za-z0-9]+)\s*-\s*([A-Za-z0-9]+)\s*:\s*(-?\d+(?:\.\d+)?)$/);
+        if (!match) {
+          throw new Error(`Invalid edge format: "${token}". Use A-B:4.`);
+        }
+        const [, rawU, rawV, rawW] = match;
+        const u = rawU.toUpperCase();
+        const v = rawV.toUpperCase();
+        if (u === v) {
+          throw new Error(`Self-loop "${u}-${v}" is not allowed for this MST tool.`);
+        }
+        const w = Number(rawW);
+        const key = [u, v].sort().join("|");
+        if (seen.has(key)) {
+          throw new Error(`Duplicate undirected edge detected: ${u}-${v}.`);
+        }
+        seen.add(key);
+        vertexSet.add(u);
+        vertexSet.add(v);
+        edges.push({
+          id: `${u}_${v}_${index}`,
+          u,
+          v,
+          w,
+          inputIndex: index
+        });
+      });
+
+      const vertices = Array.from(vertexSet).sort();
+      if (vertices.length < 2) {
+        throw new Error("The graph needs at least 2 vertices.");
+      }
+
+      const adjacency = new Map(vertices.map(vertex => [vertex, []]));
+      edges.forEach(edge => {
+        adjacency.get(edge.u).push(edge.v);
+        adjacency.get(edge.v).push(edge.u);
+      });
+
+      const visited = new Set();
+      const queue = [vertices[0]];
+      visited.add(vertices[0]);
+      while (queue.length) {
+        const current = queue.shift();
+        adjacency.get(current).forEach(next => {
+          if (!visited.has(next)) {
+            visited.add(next);
+            queue.push(next);
+          }
+        });
+      }
+
+      if (visited.size !== vertices.length) {
+        throw new Error("The graph must be connected so a single MST exists.");
+      }
+
+      const positions = computeNodePositions(vertices);
+      return { vertices, edges, positions };
+    }
+
+    function computeNodePositions(vertices) {
+      const n = vertices.length;
+      const cx = 380;
+      const cy = 210;
+      const radius = Math.max(110, 150 + Math.min(28, n * 4));
+      return vertices.reduce((acc, vertex, index) => {
+        const angle = (-Math.PI / 2) + (index * 2 * Math.PI / n);
+        acc[vertex] = {
+          x: cx + radius * Math.cos(angle),
+          y: cy + radius * Math.sin(angle)
+        };
+        return acc;
+      }, {});
+    }
+
+    function buildPseudocode() {
+      els.pseudocodePanel.innerHTML = PSEUDOCODE.map(item => `
+        <div class="code-line mono" data-line="${item.line}" title="${escapeHtml(item.tip)}">
+          <span class="line-no">${item.line}</span>
+          <span>${escapeHtml(item.text)}</span>
+        </div>
+      `).join("");
+    }
+
+    function componentsFromParent(vertices, parent) {
+      const componentMap = new Map();
+      vertices.forEach((vertex, index) => {
+        let root = index;
+        while (parent[root] !== root) {
+          root = parent[root];
+        }
+        if (!componentMap.has(root)) {
+          componentMap.set(root, []);
+        }
+        componentMap.get(root).push(vertex);
+      });
+      return Array.from(componentMap.entries()).map(([rootIndex, members]) => ({
+        rootIndex,
+        members
+      }));
+    }
+
+    function findNoCompression(index, parent) {
+      let current = index;
+      while (parent[current] !== current) {
+        current = parent[current];
+      }
+      return current;
+    }
+
+    function findWithCompression(index, parent, counters, labels) {
+      counters.finds += 1;
+      const path = [index];
+      let current = index;
+      while (parent[current] !== current) {
+        current = parent[current];
+        path.push(current);
+      }
+      const root = current;
+      let compressed = 0;
+      for (let i = 0; i < path.length - 1; i += 1) {
+        if (parent[path[i]] !== root) {
+          parent[path[i]] = root;
+          compressed += 1;
+        }
+      }
+      counters.pathCompressions += compressed;
+      return {
+        root,
+        rootLabel: labels[root],
+        path: path.map(position => labels[position]),
+        compressed
+      };
+    }
+
+    function unionByRank(rootA, rootB, parent, rank, counters, labels) {
+      counters.unions += 1;
+      if (rank[rootA] < rank[rootB]) {
+        parent[rootA] = rootB;
+        return `${labels[rootA]} attaches under ${labels[rootB]} because rank ${rank[rootA]} < ${rank[rootB]}.`;
+      }
+      if (rank[rootA] > rank[rootB]) {
+        parent[rootB] = rootA;
+        return `${labels[rootB]} attaches under ${labels[rootA]} because rank ${rank[rootB]} < ${rank[rootA]}.`;
+      }
+      parent[rootB] = rootA;
+      rank[rootA] += 1;
+      return `${labels[rootB]} attaches under ${labels[rootA]} and rank(${labels[rootA]}) increases to ${rank[rootA]} after the tie.`;
+    }
+
+    function computeCutAnalysis(graph, parent, currentEdge) {
+      if (!currentEdge) {
+        return null;
+      }
+      const vertexIndex = new Map(graph.vertices.map((vertex, index) => [vertex, index]));
+      const rootU = findNoCompression(vertexIndex.get(currentEdge.u), parent);
+      const rootV = findNoCompression(vertexIndex.get(currentEdge.v), parent);
+      if (rootU === rootV) {
+        return null;
+      }
+      const componentU = new Set();
+      graph.vertices.forEach((vertex, index) => {
+        if (findNoCompression(index, parent) === rootU) {
+          componentU.add(vertex);
+        }
+      });
+      const crossingEdges = graph.edges.filter(edge => {
+        const left = componentU.has(edge.u);
+        const right = componentU.has(edge.v);
+        const differentComponents = findNoCompression(vertexIndex.get(edge.u), parent) !== findNoCompression(vertexIndex.get(edge.v), parent);
+        return left !== right && differentComponents;
+      });
+      if (!crossingEdges.length) {
+        return null;
+      }
+      const cheapest = crossingEdges.reduce((best, edge) => {
+        if (!best || edge.w < best.w) {
+          return edge;
+        }
+        return best;
+      }, null);
+      return {
+        componentMembers: Array.from(componentU).sort(),
+        crossingIds: crossingEdges.map(edge => edge.id),
+        cheapestId: cheapest.id,
+        cheapestLabel: edgeLabel(cheapest)
+      };
+    }
+
+    function measureGraphForChart(vertexCount) {
+      const vertices = Array.from({ length: vertexCount }, (_, index) => String.fromCharCode(65 + index));
+      const edges = [];
+      for (let i = 0; i < vertexCount; i += 1) {
+        for (let j = i + 1; j < vertexCount; j += 1) {
+          edges.push({
+            id: `${vertices[i]}_${vertices[j]}`,
+            u: vertices[i],
+            v: vertices[j],
+            w: ((i + 3) * (j + 5) + (j - i) * 7) % 37 + 1,
+            inputIndex: edges.length
+          });
+        }
+      }
+      const graph = { vertices, edges };
+      const counters = {
+        sortComparisons: 0,
+        sortWrites: 0,
+        finds: 0,
+        pathCompressions: 0,
+        unions: 0,
+        accepted: 0,
+        rejected: 0,
+        inspected: 0
+      };
+      const sortedEdges = runMergeSortForMetrics(edges.slice(), counters);
+      const parent = vertices.map((_, index) => index);
+      const rank = vertices.map(() => 0);
+      const lookup = new Map(vertices.map((vertex, index) => [vertex, index]));
+      for (const edge of sortedEdges) {
+        counters.inspected += 1;
+        const rootU = findWithCompression(lookup.get(edge.u), parent, counters, vertices).root;
+        const rootV = findWithCompression(lookup.get(edge.v), parent, counters, vertices).root;
+        if (rootU !== rootV) {
+          counters.accepted += 1;
+          unionByRank(rootU, rootV, parent, rank, counters, vertices);
+          if (counters.accepted === vertices.length - 1) {
+            break;
+          }
+        } else {
+          counters.rejected += 1;
+        }
+      }
+      const total = counters.sortComparisons + counters.sortWrites + counters.finds + counters.pathCompressions + counters.unions + counters.inspected;
+      const primMatrixOps = vertexCount * vertexCount;
+      const theoretical = edges.length * Math.log2(edges.length);
+      return { vertexCount, edges: edges.length, total, primMatrixOps, theoretical };
+    }
+
+    function runMergeSortForMetrics(edges, counters) {
+      const working = edges.slice();
+      const aux = new Array(working.length);
+      function sort(left, right) {
+        if (left >= right) {
+          return;
+        }
+        const mid = Math.floor((left + right) / 2);
+        sort(left, mid);
+        sort(mid + 1, right);
+        merge(left, mid, right);
+      }
+      function merge(left, mid, right) {
+        let i = left;
+        let j = mid + 1;
+        let k = left;
+        while (i <= mid && j <= right) {
+          counters.sortComparisons += 1;
+          if (working[i].w <= working[j].w) {
+            aux[k] = working[i];
+            i += 1;
+          } else {
+            aux[k] = working[j];
+            j += 1;
+          }
+          counters.sortWrites += 1;
+          k += 1;
+        }
+        while (i <= mid) {
+          aux[k] = working[i];
+          counters.sortWrites += 1;
+          i += 1;
+          k += 1;
+        }
+        while (j <= right) {
+          aux[k] = working[j];
+          counters.sortWrites += 1;
+          j += 1;
+          k += 1;
+        }
+        for (let index = left; index <= right; index += 1) {
+          working[index] = aux[index];
+        }
+      }
+      sort(0, working.length - 1);
+      return working;
+    }
+
+    function buildSnapshots(graph) {
+      const snapshots = [];
+      const events = [];
+      const counters = {
+        sortComparisons: 0,
+        sortWrites: 0,
+        finds: 0,
+        pathCompressions: 0,
+        unions: 0,
+        accepted: 0,
+        rejected: 0,
+        inspected: 0
+      };
+
+      const edgeLookup = new Map(graph.edges.map(edge => [edge.id, edge]));
+      const order = graph.edges.slice();
+      const labels = graph.vertices.slice();
+      const vertexIndex = new Map(labels.map((vertex, index) => [vertex, index]));
+      const parent = labels.map((_, index) => index);
+      const rank = labels.map(() => 0);
+      const acceptedIds = [];
+      const rejectedIds = [];
+      let currentEdgeIndex = -1;
+      let mstWeight = 0;
+
+      function record(snapshotPatch) {
+        const snapshotIndex = snapshots.length;
+        if (snapshotPatch.event) {
+          events.push({ snapshotIndex, ...snapshotPatch.event });
+        }
+        const snap = {
+          step: snapshotIndex,
+          line: snapshotPatch.line ?? 0,
+          phase: snapshotPatch.phase ?? "idle",
+          explanation: snapshotPatch.explanation ?? "",
+          cutText: snapshotPatch.cutText ?? "The next safe edge will be justified here with the cut property.",
+          currentEdgeId: snapshotPatch.currentEdgeId ?? null,
+          compareIds: snapshotPatch.compareIds ?? [],
+          crossingIds: snapshotPatch.crossingIds ?? [],
+          cheapestCrossingId: snapshotPatch.cheapestCrossingId ?? null,
+          highlightVertices: snapshotPatch.highlightVertices ?? [],
+          pointer: snapshotPatch.pointer ?? {},
+          order: snapshotPatch.order ? snapshotPatch.order.slice() : order.map(edge => edge.id),
+          parent: parent.slice(),
+          rank: rank.slice(),
+          counters: { ...counters },
+          acceptedIds: acceptedIds.slice(),
+          rejectedIds: rejectedIds.slice(),
+          mstWeight,
+          components: componentsFromParent(labels, parent),
+          eventCount: events.length,
+          statusText: snapshotPatch.statusText ?? "Ready"
+        };
+        snapshots.push(snap);
+      }
+
+      record({
+        line: 0,
+        phase: "idle",
+        explanation: "Build the steps to preview how Kruskal will sort the edges and grow the MST.",
+        cutText: "The cut property explanation appears when a candidate edge is evaluated between two components.",
+        statusText: "Ready"
+      });
+
+      function mergeSort(left, right) {
+        if (left >= right) {
+          return;
+        }
+        const mid = Math.floor((left + right) / 2);
+        mergeSort(left, mid);
+        mergeSort(mid + 1, right);
+        merge(left, mid, right);
+      }
+
+      function merge(left, mid, right) {
+        const leftPart = order.slice(left, mid + 1);
+        const rightPart = order.slice(mid + 1, right + 1);
+        let i = 0;
+        let j = 0;
+        let k = left;
+        while (i < leftPart.length && j < rightPart.length) {
+          counters.sortComparisons += 1;
+          record({
+            line: 1,
+            phase: "sorting",
+            compareIds: [leftPart[i].id, rightPart[j].id],
+            pointer: { left: left + i, right: mid + 1 + j, write: k },
+            explanation: `Comparing ${edgeLabel(leftPart[i])} with ${edgeLabel(rightPart[j])} during merge sort. The lighter edge should be written into position ${k + 1}.`,
+            cutText: "CLO-2: sorting is being animated here. Kruskal depends on this ordered edge list before the greedy scan begins.",
+            event: {
+              phase: "Sort",
+              edge: `${leftPart[i].u}-${leftPart[i].v} vs ${rightPart[j].u}-${rightPart[j].v}`,
+              action: "Compare weights",
+              result: `${leftPart[i].w} vs ${rightPart[j].w}`,
+              kind: "sort"
+            }
+          });
+
+          if (leftPart[i].w <= rightPart[j].w) {
+            order[k] = leftPart[i];
+            i += 1;
+          } else {
+            order[k] = rightPart[j];
+            j += 1;
+          }
+          counters.sortWrites += 1;
+          record({
+            line: 1,
+            phase: "sorting",
+            pointer: { left: left + Math.min(i, leftPart.length - 1), right: mid + 1 + Math.min(j, rightPart.length - 1), write: k },
+            explanation: `Placed ${edgeLabel(order[k])} into sorted position ${k + 1} while merging the range ${left + 1}-${right + 1}.`,
+            cutText: "The tool records sort writes separately from sort comparisons, so the growth chart has real operation counts.",
+            event: {
+              phase: "Sort",
+              edge: `${order[k].u}-${order[k].v}`,
+              action: "Write edge",
+              result: `Position ${k + 1}`,
+              kind: "sort"
+            }
+          });
+          k += 1;
+        }
+        while (i < leftPart.length) {
+          order[k] = leftPart[i];
+          counters.sortWrites += 1;
+          record({
+            line: 1,
+            phase: "sorting",
+            pointer: { write: k },
+            explanation: `The right half is exhausted, so ${edgeLabel(leftPart[i])} is copied into position ${k + 1}.`,
+            cutText: "These leftover copies still count as sort work because the merge must write every edge back into the array.",
+            event: {
+              phase: "Sort",
+              edge: `${leftPart[i].u}-${leftPart[i].v}`,
+              action: "Copy remainder",
+              result: `Position ${k + 1}`,
+              kind: "sort"
+            }
+          });
+          i += 1;
+          k += 1;
+        }
+        while (j < rightPart.length) {
+          order[k] = rightPart[j];
+          counters.sortWrites += 1;
+          record({
+            line: 1,
+            phase: "sorting",
+            pointer: { write: k },
+            explanation: `The left half is exhausted, so ${edgeLabel(rightPart[j])} is copied into position ${k + 1}.`,
+            cutText: "The final order after merge sort is the exact sequence Kruskal scans in the main loop.",
+            event: {
+              phase: "Sort",
+              edge: `${rightPart[j].u}-${rightPart[j].v}`,
+              action: "Copy remainder",
+              result: `Position ${k + 1}`,
+              kind: "sort"
+            }
+          });
+          j += 1;
+          k += 1;
+        }
+      }
+
+      mergeSort(0, order.length - 1);
+
+      record({
+        line: 1,
+        phase: "sorting",
+        explanation: `All edges are now sorted: ${order.map(edge => edgeLabel(edge)).join(", ")}.`,
+        cutText: "CLO-1: sorting dominates the complexity. That is why the total runtime is O(E log E) instead of linear.",
+        event: {
+          phase: "Sort",
+          edge: "All edges",
+          action: "Finish sorting",
+          result: "Ready for scan",
+          kind: "sort"
+        }
+      });
+
+      record({
+        line: 2,
+        phase: "setup",
+        explanation: `make-set initializes ${labels.join(", ")} as separate components. Every vertex starts with itself as the parent.`,
+        cutText: "CLO-2: Union-Find is the search structure used to test whether an edge connects different components.",
+        event: {
+          phase: "Setup",
+          edge: "Vertices",
+          action: "Initialize make-set",
+          result: `${labels.length} singleton components`,
+          kind: "sort"
+        }
+      });
+
+      record({
+        line: 3,
+        phase: "setup",
+        explanation: "The MST set T starts empty. From this point on, every accepted edge must reduce the number of components by exactly one.",
+        cutText: "Kruskal's invariant: the accepted edges always form an acyclic forest.",
+        event: {
+          phase: "Setup",
+          edge: "T",
+          action: "Initialize MST set",
+          result: "Empty forest",
+          kind: "sort"
+        }
+      });
+
+      for (let index = 0; index < order.length; index += 1) {
+        if (acceptedIds.length === labels.length - 1) {
+          break;
+        }
+        const edge = order[index];
+        currentEdgeIndex = index;
+        counters.inspected += 1;
+        const preCut = computeCutAnalysis(graph, parent, edge);
+
+        record({
+          line: 4,
+          phase: "scan",
+          currentEdgeId: edge.id,
+          crossingIds: preCut ? preCut.crossingIds : [],
+          cheapestCrossingId: preCut ? preCut.cheapestId : null,
+          highlightVertices: preCut ? preCut.componentMembers : [],
+          pointer: { scan: index },
+          explanation: `Considering edge ${edgeLabel(edge)} as sorted edge i = ${index + 1}. Kruskal only moves left to right through the sorted list.`,
+          cutText: preCut
+            ? `Current cut: ${preCut.componentMembers.join(", ")} | rest. The cheapest crossing edge is ${preCut.cheapestLabel}, so it is safe to consider greedily.`
+            : "This edge is already inside one component, so the cut-property highlight is not needed here.",
+          event: {
+            phase: "Scan",
+            edge: `${edge.u}-${edge.v}`,
+            action: "Inspect edge",
+            result: `Weight ${edge.w}`,
+            kind: "sort"
+          }
+        });
+
+        const findU = findWithCompression(vertexIndex.get(edge.u), parent, counters, labels);
+        record({
+          line: 5,
+          phase: "scan",
+          currentEdgeId: edge.id,
+          crossingIds: preCut ? preCut.crossingIds : [],
+          cheapestCrossingId: preCut ? preCut.cheapestId : null,
+          highlightVertices: preCut ? preCut.componentMembers : [],
+          pointer: { scan: index },
+          explanation: `find(${edge.u}) follows the path ${findU.path.join(" → ")} and ends at root ${findU.rootLabel}. ${findU.compressed ? `Path compression updated ${findU.compressed} parent link(s).` : "No compression was needed."}`,
+          cutText: "Union-Find searches keep cycle detection fast. With path compression, later finds become shorter.",
+          event: {
+            phase: "Find",
+            edge: edge.u,
+            action: "Find root",
+            result: `Root ${findU.rootLabel}`,
+            kind: "sort"
+          }
+        });
+
+        const findV = findWithCompression(vertexIndex.get(edge.v), parent, counters, labels);
+        record({
+          line: 6,
+          phase: "scan",
+          currentEdgeId: edge.id,
+          crossingIds: preCut ? preCut.crossingIds : [],
+          cheapestCrossingId: preCut ? preCut.cheapestId : null,
+          highlightVertices: preCut ? preCut.componentMembers : [],
+          pointer: { scan: index },
+          explanation: `find(${edge.v}) follows the path ${findV.path.join(" → ")} and ends at root ${findV.rootLabel}. ${findV.compressed ? `Path compression updated ${findV.compressed} parent link(s).` : "No compression was needed."}`,
+          cutText: "The two roots tell us whether the edge connects different components or closes a cycle.",
+          event: {
+            phase: "Find",
+            edge: edge.v,
+            action: "Find root",
+            result: `Root ${findV.rootLabel}`,
+            kind: "sort"
+          }
+        });
+
+        if (findU.root !== findV.root) {
+          record({
+            line: 7,
+            phase: "decision",
+            currentEdgeId: edge.id,
+            crossingIds: preCut ? preCut.crossingIds : [],
+            cheapestCrossingId: preCut ? preCut.cheapestId : null,
+            highlightVertices: preCut ? preCut.componentMembers : [],
+            pointer: { scan: index },
+            explanation: `Roots ${findU.rootLabel} and ${findV.rootLabel} are different, so ${edgeLabel(edge)} is safe. It will connect two components without forming a cycle.`,
+            cutText: preCut
+              ? `Cut-property proof: across the cut ${preCut.componentMembers.join(", ")} | rest, ${preCut.cheapestLabel} is a lightest crossing edge, so it belongs to some MST.`
+              : "Different roots mean the edge is safe.",
+            event: {
+              phase: "Decision",
+              edge: `${edge.u}-${edge.v}`,
+              action: "Check roots",
+              result: "Safe edge",
+              kind: "good"
+            }
+          });
+
+          acceptedIds.push(edge.id);
+          counters.accepted += 1;
+          mstWeight += edge.w;
+          record({
+            line: 8,
+            phase: "decision",
+            currentEdgeId: edge.id,
+            crossingIds: preCut ? preCut.crossingIds : [],
+            cheapestCrossingId: preCut ? preCut.cheapestId : null,
+            highlightVertices: preCut ? preCut.componentMembers : [],
+            pointer: { scan: index },
+            explanation: `Add ${edgeLabel(edge)} to T. The MST now has ${acceptedIds.length} edge(s) and total weight ${mstWeight}.`,
+            cutText: "Every accepted edge lowers the number of components by one while preserving acyclicity.",
+            event: {
+              phase: "MST",
+              edge: `${edge.u}-${edge.v}`,
+              action: "Accept edge",
+              result: `Total weight ${mstWeight}`,
+              kind: "good"
+            }
+          });
+
+          const unionNote = unionByRank(findU.root, findV.root, parent, rank, counters, labels);
+          record({
+            line: 9,
+            phase: "decision",
+            currentEdgeId: edge.id,
+            pointer: { scan: index },
+            explanation: `union(${findU.rootLabel}, ${findV.rootLabel}) merges the two components. ${unionNote}`,
+            cutText: "Union by rank keeps the forest shallow, which supports the near-constant amortized cost of find/union.",
+            event: {
+              phase: "Union",
+              edge: `${findU.rootLabel}-${findV.rootLabel}`,
+              action: "Merge components",
+              result: unionNote,
+              kind: "good"
+            }
+          });
+        } else {
+          rejectedIds.push(edge.id);
+          counters.rejected += 1;
+          record({
+            line: 10,
+            phase: "decision",
+            currentEdgeId: edge.id,
+            pointer: { scan: index },
+            explanation: `${edgeLabel(edge)} is rejected because both endpoints already have root ${findU.rootLabel}. Accepting it would create a cycle.`,
+            cutText: "Cycle prevention is what keeps the accepted edges as a tree instead of just a low-weight subgraph.",
+            event: {
+              phase: "Reject",
+              edge: `${edge.u}-${edge.v}`,
+              action: "Skip edge",
+              result: `Cycle at root ${findU.rootLabel}`,
+              kind: "bad"
+            }
+          });
+        }
+      }
+
+      record({
+        line: 11,
+        phase: "done",
+        explanation: `Done. The MST contains ${acceptedIds.map(id => edgeLabel(edgeLookup.get(id))).join(", ")} with total weight ${mstWeight}.`,
+        cutText: "CLO-3 summary: the algorithm succeeded because every step made the lightest safe greedy choice.",
+        statusText: "Done",
+        event: {
+          phase: "Done",
+          edge: "MST",
+          action: "Return tree",
+          result: `Weight ${mstWeight}`,
+          kind: "good"
+        }
+      });
+
+      return { snapshots, events, sortedOrder: order.map(edge => edge.id) };
+    }
+
+    function renderGraph(snapshot) {
+      if (!state.graph) {
+        els.graphSvg.innerHTML = `
+          <rect x="0" y="0" width="760" height="420" rx="16" fill="transparent"></rect>
+          <text x="380" y="200" text-anchor="middle" fill="var(--text)" font-size="24" font-weight="800">Graph visualization will appear here</text>
+          <text x="380" y="230" text-anchor="middle" fill="var(--muted)" font-size="15">Load a preset or type an edge list, then click Build Steps.</text>
+        `;
+        return;
+      }
+      const graph = state.graph;
+      const lookup = new Map(graph.edges.map(edge => [edge.id, edge]));
+      const acceptedSet = new Set(snapshot.acceptedIds);
+      const rejectedSet = new Set(snapshot.rejectedIds);
+      const compareSet = new Set(snapshot.compareIds);
+      const crossingSet = new Set(snapshot.crossingIds);
+      const highlightVertices = new Set(snapshot.highlightVertices);
+
+      const edgeMarkup = graph.edges.map(edge => {
+        const from = graph.positions[edge.u];
+        const to = graph.positions[edge.v];
+        const midX = (from.x + to.x) / 2;
+        const midY = (from.y + to.y) / 2;
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        const length = Math.hypot(dx, dy) || 1;
+        const offX = -dy / length * 12;
+        const offY = dx / length * 12;
+        let stroke = "rgba(163, 191, 219, 0.34)";
+        let width = 3;
+        let opacity = 0.92;
+        let dash = "";
+        if (crossingSet.has(edge.id)) {
+          stroke = "rgba(117, 183, 255, 0.54)";
+          width = 4;
+        }
+        if (edge.id === snapshot.cheapestCrossingId) {
+          stroke = "var(--focus)";
+          width = 6;
+        }
+        if (compareSet.has(edge.id)) {
+          stroke = "var(--violet)";
+          width = 6;
+        }
+        if (edge.id === snapshot.currentEdgeId) {
+          stroke = "var(--accent-2)";
+          width = 6;
+        }
+        if (acceptedSet.has(edge.id)) {
+          stroke = "var(--good)";
+          width = 7;
+        }
+        if (rejectedSet.has(edge.id)) {
+          stroke = "var(--bad)";
+          width = 5;
+          dash = "8 6";
+        }
+        return `
+          <g>
+            <line x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" stroke="${stroke}" stroke-width="${width}" stroke-linecap="round" stroke-dasharray="${dash}" opacity="${opacity}" style="transition: all 220ms ease;"></line>
+            <rect x="${midX + offX - 22}" y="${midY + offY - 14}" width="44" height="28" rx="12" fill="rgba(8, 19, 31, 0.95)" stroke="rgba(149, 187, 219, 0.18)"></rect>
+            <text x="${midX + offX}" y="${midY + offY + 5}" text-anchor="middle" fill="var(--text)" font-size="13" font-weight="700">${edge.w}</text>
+          </g>
+        `;
+      }).join("");
+
+      const nodeMarkup = graph.vertices.map(vertex => {
+        const position = graph.positions[vertex];
+        const inCut = highlightVertices.has(vertex);
+        return `
+          <g transform="translate(${position.x} ${position.y})">
+            <circle r="28" fill="${inCut ? 'rgba(117, 183, 255, 0.22)' : 'rgba(18, 42, 65, 0.95)'}" stroke="${inCut ? 'var(--focus)' : 'rgba(149, 187, 219, 0.28)'}" stroke-width="${inCut ? 4 : 2}" style="transition: all 220ms ease;"></circle>
+            <text text-anchor="middle" y="6" fill="var(--text)" font-size="18" font-weight="800">${vertex}</text>
+          </g>
+        `;
+      }).join("");
+
+      const currentEdge = lookup.get(snapshot.currentEdgeId);
+      const footer = currentEdge
+        ? `<text x="26" y="394" fill="var(--muted)" font-size="14">Current edge: ${escapeHtml(edgeLabel(currentEdge))}</text>`
+        : `<text x="26" y="394" fill="var(--muted)" font-size="14">Build or step through the algorithm to see the graph states.</text>`;
+
+      els.graphSvg.innerHTML = `
+        <rect x="0" y="0" width="760" height="420" rx="16" fill="transparent"></rect>
+        ${edgeMarkup}
+        ${nodeMarkup}
+        ${footer}
+      `;
+    }
+
+    function renderEdgeOrder(snapshot) {
+      if (!state.graph) {
+        els.edgeOrderSvg.innerHTML = `
+          <rect x="0" y="0" width="760" height="210" rx="16" fill="transparent"></rect>
+          <text x="380" y="92" text-anchor="middle" fill="var(--text)" font-size="22" font-weight="800">Sorted edge order</text>
+          <text x="380" y="124" text-anchor="middle" fill="var(--muted)" font-size="15">Merge-sort comparisons, writes, and the scan pointer will appear here.</text>
+        `;
+        els.edgeRibbonLabel.textContent = "Awaiting steps";
+        return;
+      }
+      const orderIds = snapshot.order;
+      const edgeById = new Map(state.graph.edges.map(edge => [edge.id, edge]));
+      const count = orderIds.length;
+      const gap = Math.max(8, Math.min(18, 28 - count));
+      const boxWidth = Math.max(66, Math.min(106, (720 - (count - 1) * gap) / Math.max(1, count)));
+      const startX = 20;
+      const y = 86;
+      const pointerMarkup = [];
+      const boxes = orderIds.map((id, index) => {
+        const edge = edgeById.get(id);
+        const x = startX + index * (boxWidth + gap);
+        let fill = "rgba(17, 34, 54, 0.92)";
+        let stroke = "rgba(149, 187, 219, 0.2)";
+        if (snapshot.compareIds.includes(id)) {
+          fill = "rgba(125, 157, 255, 0.18)";
+          stroke = "var(--violet)";
+        }
+        if (id === snapshot.currentEdgeId) {
+          fill = "rgba(243, 180, 77, 0.18)";
+          stroke = "var(--accent-2)";
+        }
+        if (snapshot.acceptedIds.includes(id)) {
+          fill = "rgba(118, 211, 124, 0.18)";
+          stroke = "var(--good)";
+        }
+        if (snapshot.rejectedIds.includes(id)) {
+          fill = "rgba(240, 109, 109, 0.18)";
+          stroke = "var(--bad)";
+        }
+        if (snapshot.pointer.left === index) {
+          pointerMarkup.push(pointerLabel(x + boxWidth / 2, 28, "L", "var(--violet)"));
+        }
+        if (snapshot.pointer.right === index) {
+          pointerMarkup.push(pointerLabel(x + boxWidth / 2, 48, "R", "var(--violet)"));
+        }
+        if (snapshot.pointer.write === index) {
+          pointerMarkup.push(pointerLabel(x + boxWidth / 2, 168, "W", "var(--accent)"));
+        }
+        if (snapshot.pointer.scan === index) {
+          pointerMarkup.push(pointerLabel(x + boxWidth / 2, 168, "i", "var(--accent-2)"));
+        }
+        return `
+          <g transform="translate(${x} ${y})" style="transition: all 220ms ease;">
+            <rect width="${boxWidth}" height="62" rx="14" fill="${fill}" stroke="${stroke}" stroke-width="2"></rect>
+            <text x="${boxWidth / 2}" y="24" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="700">${edge.u}-${edge.v}</text>
+            <text x="${boxWidth / 2}" y="45" text-anchor="middle" fill="var(--muted)" font-size="13">w=${edge.w}</text>
+            <text x="${boxWidth / 2}" y="80" text-anchor="middle" fill="rgba(156, 183, 209, 0.72)" font-size="12">${index + 1}</text>
+          </g>
+        `;
+      }).join("");
+
+      const caption = snapshot.phase === "sorting"
+        ? "Merge-sort animation is active."
+        : "The array stays sorted while Kruskal scans it from left to right.";
+      els.edgeRibbonLabel.textContent = caption;
+      els.edgeOrderSvg.innerHTML = `
+        <rect x="0" y="0" width="760" height="210" rx="16" fill="transparent"></rect>
+        <text x="22" y="26" fill="var(--muted)" font-size="14">${caption}</text>
+        ${boxes}
+        ${pointerMarkup.join("")}
+      `;
+    }
+
+    function pointerLabel(x, y, label, color) {
+      return `
+        <g>
+          <text x="${x}" y="${y}" text-anchor="middle" fill="${color}" font-size="15" font-weight="800">${label}</text>
+          <line x1="${x}" y1="${y + 5}" x2="${x}" y2="${y + 25}" stroke="${color}" stroke-width="2"></line>
+        </g>
+      `;
+    }
+
+    function renderUnionFind(snapshot) {
+      if (!state.graph) {
+        els.unionFindSvg.innerHTML = `
+          <rect x="0" y="0" width="520" height="320" rx="16" fill="transparent"></rect>
+          <text x="260" y="142" text-anchor="middle" fill="var(--text)" font-size="22" font-weight="800">Union-Find forest</text>
+          <text x="260" y="172" text-anchor="middle" fill="var(--muted)" font-size="15">Parent links, ranks, and path compression updates will render here.</text>
+        `;
+        return;
+      }
+      const labels = state.graph.vertices;
+      const childrenMap = new Map(labels.map((_, index) => [index, []]));
+      snapshot.parent.forEach((parentIndex, index) => {
+        if (parentIndex !== index) {
+          childrenMap.get(parentIndex).push(index);
+        }
+      });
+      const roots = snapshot.parent
+        .map((parentIndex, index) => ({ parentIndex, index }))
+        .filter(item => item.parentIndex === item.index)
+        .map(item => item.index);
+
+      const componentLayouts = roots.map(root => layoutTree(root, childrenMap));
+      const componentUnits = componentLayouts.map(layout => Math.max(layout.width * 1.35, 1.6));
+      const gapUnits = 0.7;
+      const totalUnits = componentUnits.reduce((sum, units) => sum + units, 0) + Math.max(0, componentUnits.length - 1) * gapUnits;
+      const availableWidth = 452;
+      const scaleX = availableWidth / Math.max(totalUnits, 1);
+      let unitOffset = 0;
+      const parts = [];
+
+      componentLayouts.forEach((layout, componentIndex) => {
+        const widthUnits = componentUnits[componentIndex];
+        const localPositions = new Map();
+        layout.nodes.forEach(node => {
+          localPositions.set(node.index, {
+            x: 34 + (unitOffset + 0.4 + node.x * 1.35) * scaleX,
+            y: 52 + node.depth * 86
+          });
+        });
+        layout.nodes.forEach(node => {
+          if (snapshot.parent[node.index] !== node.index) {
+            const from = localPositions.get(snapshot.parent[node.index]);
+            const to = localPositions.get(node.index);
+            parts.push(`<line x1="${from.x}" y1="${from.y + 20}" x2="${to.x}" y2="${to.y - 20}" stroke="rgba(149, 187, 219, 0.36)" stroke-width="3" stroke-linecap="round"></line>`);
+          }
+        });
+        layout.nodes.forEach(node => {
+          const position = localPositions.get(node.index);
+          const isRoot = snapshot.parent[node.index] === node.index;
+          parts.push(`
+            <g transform="translate(${position.x} ${position.y})">
+              <circle r="22" fill="${isRoot ? 'rgba(82, 212, 200, 0.18)' : 'rgba(17, 34, 54, 0.95)'}" stroke="${isRoot ? 'var(--accent)' : 'rgba(149, 187, 219, 0.24)'}" stroke-width="${isRoot ? 3 : 2}"></circle>
+              <text text-anchor="middle" y="5" fill="var(--text)" font-size="15" font-weight="800">${labels[node.index]}</text>
+              <text text-anchor="middle" y="40" fill="var(--muted)" font-size="11">r=${snapshot.rank[node.index]}</text>
+            </g>
+          `);
+        });
+        const componentCenter = 34 + (unitOffset + widthUnits / 2) * scaleX;
+        parts.push(`<text x="${componentCenter}" y="290" text-anchor="middle" fill="rgba(156, 183, 209, 0.72)" font-size="12">Component ${componentIndex + 1}</text>`);
+        unitOffset += widthUnits + gapUnits;
+      });
+
+      els.ufLabel.textContent = roots.length
+        ? `${roots.length} root(s), ranks shown under each node`
+        : "No parent links yet";
+      els.unionFindSvg.innerHTML = `
+        <rect x="0" y="0" width="520" height="320" rx="16" fill="transparent"></rect>
+        ${parts.join("")}
+      `;
+    }
+
+    function layoutTree(root, childrenMap) {
+      let cursor = 0;
+      const nodes = [];
+      function walk(index, depth) {
+        const children = childrenMap.get(index);
+        let x;
+        if (!children.length) {
+          x = cursor;
+          cursor += 1;
+        } else {
+          const childPositions = children.map(child => walk(child, depth + 1));
+          x = childPositions.reduce((sum, value) => sum + value, 0) / childPositions.length;
+        }
+        nodes.push({ index, x, depth });
+        return x;
+      }
+      walk(root, 0);
+      const width = Math.max(1, cursor);
+      return { width, nodes };
+    }
+
+    function renderPseudocode(snapshot) {
+      const lines = els.pseudocodePanel.querySelectorAll(".code-line");
+      lines.forEach(line => {
+        const active = Number(line.dataset.line) === snapshot.line;
+        line.classList.toggle("active", active);
+        if (active) {
+          line.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        }
+      });
+    }
+
+    function renderExplanation(snapshot) {
+      els.explanationBox.innerHTML = `
+        <strong style="display:block; margin-bottom:8px; color: var(--text);">Step ${snapshot.step + 1}</strong>
+        <span>${escapeHtml(snapshot.explanation)}</span>
+      `;
+      els.cutPropertyBox.textContent = snapshot.cutText;
+    }
+
+    function renderCounters(snapshot) {
+      els.stepCounter.textContent = `${snapshot.step + 1} / ${state.snapshots.length}`;
+      els.mstWeight.textContent = snapshot.mstWeight;
+      els.componentCount.textContent = snapshot.components.length;
+      els.sortComparisons.textContent = snapshot.counters.sortComparisons;
+      els.sortWrites.textContent = snapshot.counters.sortWrites;
+      els.findOps.textContent = snapshot.counters.finds;
+      els.pathCompressions.textContent = snapshot.counters.pathCompressions;
+      els.unionOps.textContent = snapshot.counters.unions;
+      els.acceptedEdges.textContent = snapshot.counters.accepted;
+      els.rejectedEdges.textContent = snapshot.counters.rejected;
+      els.inspectedEdges.textContent = snapshot.counters.inspected;
+    }
+
+    function renderHistory(snapshot) {
+      const visible = state.events.slice(Math.max(0, snapshot.eventCount - 28), snapshot.eventCount);
+      els.historyBody.innerHTML = visible.map(event => {
+        const tagClass = event.kind === "good" ? "good" : event.kind === "bad" ? "bad" : "sort";
+        const active = event.snapshotIndex === state.currentStep ? "active" : "";
+        return `
+          <tr class="history-row ${active}" data-step="${event.snapshotIndex}">
+            <td>${event.snapshotIndex + 1}</td>
+            <td>${escapeHtml(event.phase)}</td>
+            <td class="mono">${escapeHtml(event.edge)}</td>
+            <td>${escapeHtml(event.action)}</td>
+            <td><span class="tag ${tagClass}">${escapeHtml(event.result)}</span></td>
+          </tr>
+        `;
+      }).join("");
+
+      Array.from(els.historyBody.querySelectorAll("tr.history-row")).forEach(row => {
+        row.addEventListener("click", () => {
+          stopPlayback();
+          state.currentStep = Number(row.dataset.step);
+          setStatus("Paused");
+          renderCurrentStep();
+        });
+      });
+    }
+
+    function renderCurrentStep() {
+      if (!state.snapshots.length) {
+        return;
+      }
+      const snapshot = state.snapshots[state.currentStep];
+      renderGraph(snapshot);
+      renderEdgeOrder(snapshot);
+      renderUnionFind(snapshot);
+      renderPseudocode(snapshot);
+      renderExplanation(snapshot);
+      renderCounters(snapshot);
+      renderHistory(snapshot);
+      if (snapshot.phase === "done") {
+        setStatus("Done");
+      }
+      updateButtonState();
+      updateAnalysisPanels();
+    }
+
+    function stopPlayback() {
+      if (state.playbackTimer) {
+        clearTimeout(state.playbackTimer);
+        state.playbackTimer = null;
+      }
+    }
+
+    function schedulePlayback() {
+      stopPlayback();
+      if (state.status !== "Playing") {
+        return;
+      }
+      const delay = Math.round(720 / state.speed);
+      state.playbackTimer = setTimeout(() => {
+        if (state.currentStep < state.snapshots.length - 1) {
+          state.currentStep += 1;
+          renderCurrentStep();
+          schedulePlayback();
+        } else {
+          stopPlayback();
+          setStatus("Done");
+          updateButtonState();
+        }
+      }, delay);
+    }
+
+    function updateButtonState() {
+      const hasSnapshots = state.snapshots.length > 0;
+      els.stepBtn.disabled = !hasSnapshots || state.currentStep >= state.snapshots.length - 1;
+      els.playBtn.disabled = !hasSnapshots || state.currentStep >= state.snapshots.length - 1 || state.status === "Playing";
+      els.pauseBtn.disabled = state.status !== "Playing";
+      els.resetBtn.disabled = !hasSnapshots;
+    }
+
+    function renderGrowthChart(maxVertices) {
+      const data = [];
+      for (let n = 4; n <= maxVertices; n += 1) {
+        data.push(measureGraphForChart(n));
+      }
+      const width = 720;
+      const height = 320;
+      const margin = { top: 26, right: 24, bottom: 40, left: 58 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+      const maxY = Math.max(
+        ...data.map(point => point.total),
+        ...data.map(point => point.primMatrixOps),
+        ...data.map(point => point.theoretical)
+      );
+
+      const scaleX = value => margin.left + ((value - 4) / Math.max(1, maxVertices - 4)) * plotWidth;
+      const scaleY = value => margin.top + plotHeight - (value / maxY) * plotHeight;
+
+      const theoreticalScale = data[data.length - 1].total / data[data.length - 1].theoretical;
+      const primScale = data[data.length - 1].total / data[data.length - 1].primMatrixOps;
+
+      const actualPath = data.map((point, index) => `${index ? "L" : "M"} ${scaleX(point.vertexCount)} ${scaleY(point.total)}`).join(" ");
+      const theoryPath = data.map((point, index) => `${index ? "L" : "M"} ${scaleX(point.vertexCount)} ${scaleY(point.theoretical * theoreticalScale)}`).join(" ");
+      const primPath = data.map((point, index) => `${index ? "L" : "M"} ${scaleX(point.vertexCount)} ${scaleY(point.primMatrixOps * primScale)}`).join(" ");
+
+      const yTicks = 4;
+      const gridLines = Array.from({ length: yTicks + 1 }, (_, tick) => {
+        const yValue = maxY * (tick / yTicks);
+        const y = scaleY(yValue);
+        return `
+          <line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="rgba(149, 187, 219, 0.12)"></line>
+          <text x="${margin.left - 10}" y="${y + 4}" text-anchor="end" fill="rgba(156, 183, 209, 0.72)" font-size="12">${Math.round(yValue)}</text>
+        `;
+      }).join("");
+
+      const xTicks = data.map(point => `
+        <line x1="${scaleX(point.vertexCount)}" y1="${height - margin.bottom}" x2="${scaleX(point.vertexCount)}" y2="${margin.top}" stroke="rgba(149, 187, 219, 0.08)"></line>
+        <text x="${scaleX(point.vertexCount)}" y="${height - 16}" text-anchor="middle" fill="rgba(156, 183, 209, 0.72)" font-size="12">${point.vertexCount}</text>
+      `).join("");
+
+      const points = data.map(point => `
+        <circle cx="${scaleX(point.vertexCount)}" cy="${scaleY(point.total)}" r="4" fill="var(--accent)"></circle>
+      `).join("");
+
+      els.growthChartSvg.innerHTML = `
+        <rect x="0" y="0" width="${width}" height="${height}" rx="16" fill="transparent"></rect>
+        ${gridLines}
+        ${xTicks}
+        <path d="${theoryPath}" fill="none" stroke="var(--accent-2)" stroke-width="3" stroke-dasharray="8 6"></path>
+        <path d="${primPath}" fill="none" stroke="var(--violet)" stroke-width="3"></path>
+        <path d="${actualPath}" fill="none" stroke="var(--accent)" stroke-width="4"></path>
+        ${points}
+        <text x="${width / 2}" y="${height - 4}" text-anchor="middle" fill="var(--muted)" font-size="13">Number of vertices n</text>
+        <text x="20" y="${height / 2}" transform="rotate(-90 20 ${height / 2})" text-anchor="middle" fill="var(--muted)" font-size="13">Operation count (scaled)</text>
+      `;
+
+      const last = data[data.length - 1];
+      els.complexitySummary.textContent = `For n = ${last.vertexCount}, the dense graph has E = ${last.edges} edges. Actual measured Kruskal work is ${last.total} operations here, tracking very closely with the scaled E log E curve. Prim with an adjacency matrix is shown for comparison on the same chart.`;
+      els.worstCaseCallout.textContent = `Worst-case preset: "Dense Worst Case" has 6 vertices and 15 edges, which is the maximum E for that vertex count. Dense graphs force Kruskal to sort many edges and reject many cycle-closing edges, which is why they demonstrate the worst-case behavior best.`;
+    }
+
+    function simulateNaiveInputOrder(graph) {
+      const parent = graph.vertices.map((_, index) => index);
+      const rank = graph.vertices.map(() => 0);
+      const lookup = new Map(graph.vertices.map((vertex, index) => [vertex, index]));
+      let total = 0;
+      const chosen = [];
+      let cycleRejected = 0;
+      graph.edges.forEach(edge => {
+        const rootU = findNoCompression(lookup.get(edge.u), parent);
+        const rootV = findNoCompression(lookup.get(edge.v), parent);
+        if (rootU !== rootV) {
+          chosen.push(edge);
+          total += edge.w;
+          unionByRank(rootU, rootV, parent, rank, { unions: 0 }, graph.vertices);
+        } else {
+          cycleRejected += 1;
+        }
+      });
+      return { total, chosen, cycleRejected };
+    }
+
+    function calculateKruskalSummary(graph) {
+      const sorted = graph.edges.slice().sort((a, b) => a.w - b.w || a.inputIndex - b.inputIndex);
+      const parent = graph.vertices.map((_, index) => index);
+      const rank = graph.vertices.map(() => 0);
+      const lookup = new Map(graph.vertices.map((vertex, index) => [vertex, index]));
+      let total = 0;
+      const chosen = [];
+      for (const edge of sorted) {
+        const rootU = findNoCompression(lookup.get(edge.u), parent);
+        const rootV = findNoCompression(lookup.get(edge.v), parent);
+        if (rootU !== rootV) {
+          chosen.push(edge);
+          total += edge.w;
+          unionByRank(rootU, rootV, parent, rank, { unions: 0 }, graph.vertices);
+        }
+        if (chosen.length === graph.vertices.length - 1) {
+          break;
+        }
+      }
+      return { total, chosen };
+    }
+
+    function updateAnalysisPanels() {
+      if (!state.graph) {
+        els.impactSortingText.textContent = "Load or build a graph to compare sorted and unsorted processing.";
+        els.impactSearchingText.textContent = "Union-Find analysis appears after a graph is loaded.";
+        els.typedOrderResult.textContent = "—";
+        els.kruskalResult.textContent = "—";
+        els.greedyChoiceText.textContent = "Build a graph to see the current cut-property explanation.";
+        return;
+      }
+      const naive = simulateNaiveInputOrder(state.graph);
+      const kruskal = calculateKruskalSummary(state.graph);
+      const difference = naive.total - kruskal.total;
+      if (difference > 0) {
+        els.impactSortingText.textContent = `If the algorithm scans the typed input order instead of the sorted order, this graph produces a heavier spanning tree: ${naive.total} instead of ${kruskal.total}. Sorting exposes the globally lightest safe edges first.`;
+      } else {
+        els.impactSortingText.textContent = `On this graph the typed order happens to match the MST weight ${kruskal.total}, but that is accidental. The guarantee only comes from sorting the edges first.`;
+      }
+      els.impactSearchingText.textContent = `Union-Find turns cycle detection into fast find/union operations. Without it, Kruskal would need a slower graph search after each candidate edge to test whether a cycle appears.`;
+      els.typedOrderResult.textContent = `Edges chosen in typed order: ${naive.chosen.map(edge => `${edge.u}-${edge.v}(${edge.w})`).join(", ")}. Total weight = ${naive.total}. Cycle rejections = ${naive.cycleRejected}.`;
+      els.kruskalResult.textContent = `Sorted-order Kruskal picks: ${kruskal.chosen.map(edge => `${edge.u}-${edge.v}(${edge.w})`).join(", ")}. Total weight = ${kruskal.total}.`;
+
+      const snapshot = state.snapshots[state.currentStep];
+      if (snapshot && snapshot.cutText) {
+        els.greedyChoiceText.textContent = snapshot.cutText;
+      } else {
+        els.greedyChoiceText.textContent = "During the scan, the current cut and its cheapest crossing edge appear here.";
+      }
+    }
+
+    function buildFromInput() {
+      stopPlayback();
+      clearError();
+      try {
+        const graph = parseGraph(els.edgeInput.value);
+        const { snapshots, events } = buildSnapshots(graph);
+        state.graph = graph;
+        state.snapshots = snapshots;
+        state.events = events;
+        state.currentStep = 0;
+        setStatus("Ready");
+        renderCurrentStep();
+      } catch (error) {
+        state.graph = null;
+        state.snapshots = [];
+        state.events = [];
+        state.currentStep = 0;
+        setStatus("Idle");
+        showError(error.message);
+        updateButtonState();
+        updateAnalysisPanels();
+      }
+    }
+
+    function stepForward() {
+      if (!state.snapshots.length) {
+        return;
+      }
+      if (state.currentStep < state.snapshots.length - 1) {
+        state.currentStep += 1;
+        if (state.currentStep === state.snapshots.length - 1) {
+          setStatus("Done");
+        } else {
+          setStatus("Paused");
+        }
+        renderCurrentStep();
+      }
+    }
+
+    function resetSteps() {
+      stopPlayback();
+      if (!state.snapshots.length) {
+        return;
+      }
+      state.currentStep = 0;
+      setStatus("Ready");
+      renderCurrentStep();
+    }
+
+    function playSteps() {
+      if (!state.snapshots.length || state.currentStep >= state.snapshots.length - 1) {
+        return;
+      }
+      setStatus("Playing");
+      updateButtonState();
+      schedulePlayback();
+    }
+
+    function pauseSteps() {
+      if (state.status !== "Playing") {
+        return;
+      }
+      stopPlayback();
+      setStatus("Paused");
+      updateButtonState();
+    }
+
+    function buildPresetButtons() {
+      els.presetButtons.innerHTML = PRESETS.map(preset => `
+        <button type="button" class="secondary" data-preset="${preset.id}" title="${escapeHtml(preset.description)}">${escapeHtml(preset.name)}</button>
+      `).join("");
+      Array.from(els.presetButtons.querySelectorAll("button")).forEach(button => {
+        button.addEventListener("click", () => {
+          const preset = PRESETS.find(item => item.id === button.dataset.preset);
+          els.edgeInput.value = preset.edgeText;
+          clearError();
+          buildFromInput();
+        });
+      });
+    }
+
+    function initialize() {
+      buildPresetButtons();
+      buildPseudocode();
+      els.speedSlider.addEventListener("input", () => {
+        state.speed = Number(els.speedSlider.value);
+        els.speedValue.textContent = `${state.speed.toFixed(2)}x`;
+        if (state.status === "Playing") {
+          schedulePlayback();
+        }
+      });
+      els.chartSizeSlider.addEventListener("input", () => {
+        const value = Number(els.chartSizeSlider.value);
+        els.chartSizeLabel.textContent = `${value} vertices`;
+        renderGrowthChart(value);
+      });
+      els.buildBtn.addEventListener("click", buildFromInput);
+      els.stepBtn.addEventListener("click", stepForward);
+      els.playBtn.addEventListener("click", playSteps);
+      els.pauseBtn.addEventListener("click", pauseSteps);
+      els.resetBtn.addEventListener("click", resetSteps);
+      renderGrowthChart(Number(els.chartSizeSlider.value));
+      els.chartSizeLabel.textContent = `${Number(els.chartSizeSlider.value)} vertices`;
+      updateAnalysisPanels();
+      updateButtonState();
+      renderGraph(null);
+      renderEdgeOrder({ order: [], compareIds: [], pointer: {}, acceptedIds: [], rejectedIds: [], phase: "idle" });
+      renderUnionFind(null);
+    }
+
+    initialize();
+  </script>
+</body>
+</html>
