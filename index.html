@@ -35,13 +35,14 @@
       background: #000000;
       color: var(--text);
       font-family: Verdana, Geneva, Tahoma, sans-serif;
+      font-size: 14px;
     }
 
     .shell {
       display: grid;
       grid-template-columns: minmax(340px, 420px) minmax(0, 1fr);
-      gap: 16px;
-      padding: 16px;
+      gap: 12px;
+      padding: 12px;
       min-height: 100vh;
     }
 
@@ -56,17 +57,17 @@
     .controls {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
     }
 
     .controls .panel {
-      padding: 16px;
+      padding: 12px;
     }
 
     .visuals {
       display: grid;
       grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
-      gap: 14px;
+      gap: 12px;
       align-content: start;
     }
 
@@ -77,31 +78,33 @@
     h1,
     h2,
     h3 {
-      margin: 0 0 10px;
+      margin: 0 0 8px;
       font-family: Verdana, Geneva, Tahoma, sans-serif;
       letter-spacing: 0;
+      line-height: 1.25;
     }
 
     h1 {
-      font-size: clamp(1.7rem, 2vw, 2.2rem);
+      font-size: clamp(1.4rem, 1.8vw, 1.8rem);
     }
 
     h2 {
-      font-size: 1.15rem;
+      font-size: 1rem;
     }
 
     h3 {
-      font-size: 1rem;
+      font-size: 0.92rem;
     }
 
     p {
       margin: 0;
-      line-height: 1.55;
+      line-height: 1.4;
+      font-size: 0.92rem;
       color: var(--muted);
     }
 
     .hero {
-      padding: 18px;
+      padding: 12px;
     }
 
     .hero-badges {
@@ -133,9 +136,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-      padding-bottom: 8px;
+      gap: 8px;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
       border-bottom: 1px solid rgba(181, 202, 223, 0.12);
     }
 
@@ -151,13 +154,13 @@
 
     textarea {
       resize: vertical;
-      min-height: 112px;
+      min-height: 88px;
       border-radius: 10px;
       border: 1px solid var(--line);
       background: #050505;
       color: var(--text);
-      padding: 12px 14px;
-      font: 0.96rem/1.5 "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      padding: 10px 12px;
+      font: 0.88rem/1.4 "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
       transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
     }
 
@@ -179,8 +182,8 @@
     }
 
     .helper {
-      margin-top: 10px;
-      font-size: 0.84rem;
+      margin-top: 8px;
+      font-size: 0.78rem;
       color: var(--muted);
     }
 
@@ -188,7 +191,7 @@
     .button-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 10px;
+      gap: 8px;
     }
 
     button {
@@ -196,10 +199,11 @@
       background: #5b8def;
       color: var(--text);
       border-radius: 10px;
-      padding: 10px 12px;
+      padding: 8px 10px;
       font-weight: 700;
       letter-spacing: 0.01em;
-      min-height: 44px;
+      min-height: 36px;
+      font-size: 0.9rem;
       cursor: pointer;
       box-shadow: 0 3px 0 #3d63aa;
       transition: background var(--transition), border-color var(--transition), opacity var(--transition), transform var(--transition);
@@ -264,7 +268,7 @@
     .impact-grid,
     .greedy-grid {
       display: grid;
-      gap: 12px;
+      gap: 8px;
     }
 
     .speed-label,
@@ -289,15 +293,24 @@
       background: #0d0d0d;
       border: 1px solid var(--line);
       border-radius: 10px;
-      padding: 12px 14px;
+      padding: 9px 10px;
       min-width: 0;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
     }
 
     .stat-value {
-      font-size: 1.35rem;
+      font-size: 1.08rem;
       font-weight: 700;
       color: var(--text);
+    }
+
+    .status-card,
+    .stat-card,
+    .impact-card,
+    .concept,
+    .step-mini-card,
+    .comparison > div {
+      font-size: 0.88rem;
     }
 
     .stat-card small,
@@ -313,13 +326,13 @@
     }
 
     details + details {
-      margin-top: 10px;
+      margin-top: 8px;
     }
 
     summary {
       list-style: none;
       cursor: pointer;
-      padding: 12px 14px;
+      padding: 10px 12px;
       font-weight: 700;
       color: var(--text);
       position: relative;
@@ -336,8 +349,8 @@
       content: "+";
       position: absolute;
       right: 16px;
-      top: 10px;
-      font-size: 1.1rem;
+      top: 8px;
+      font-size: 1rem;
       font-weight: 700;
       color: #eff5fb;
     }
@@ -351,11 +364,12 @@
     }
 
     .details-body {
-      padding: 0 16px 16px;
+      padding: 0 12px 12px;
       color: var(--muted);
       display: grid;
-      gap: 10px;
-      line-height: 1.55;
+      gap: 8px;
+      line-height: 1.4;
+      font-size: 0.9rem;
     }
 
     .details-body ol,
@@ -367,19 +381,19 @@
     .legend {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
+      gap: 8px;
+      margin-top: 8px;
     }
 
     .legend-item {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 5px 9px;
+      padding: 4px 7px;
       background: #111111;
       border: 1px solid var(--line);
       border-radius: 8px;
-      font-size: 0.85rem;
+      font-size: 0.76rem;
       color: var(--muted);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
     }
@@ -392,23 +406,23 @@
     }
 
     .viz-panel {
-      padding: 14px;
+      padding: 10px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 8px;
       min-width: 0;
     }
 
     .viz-copy {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
+      gap: 8px;
       align-items: baseline;
       flex-wrap: wrap;
     }
 
     .viz-copy p {
-      max-width: 600px;
+      max-width: 560px;
     }
 
     svg {
@@ -428,16 +442,16 @@
       display: inline-flex;
       align-items: center;
       border-radius: 8px;
-      padding: 5px 8px;
+      padding: 4px 6px;
       background: #111111;
       border: 1px solid var(--line);
       color: var(--muted);
-      font-size: 0.82rem;
+      font-size: 0.74rem;
     }
 
     input[type="range"] {
       appearance: none;
-      height: 8px;
+      height: 6px;
       border-radius: 999px;
       background: linear-gradient(90deg, rgba(91, 141, 239, 0.7), rgba(255, 255, 255, 0.16));
       outline: none;
@@ -445,8 +459,8 @@
 
     input[type="range"]::-webkit-slider-thumb {
       appearance: none;
-      width: 18px;
-      height: 18px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
       background: #ffffff;
       border: 2px solid #5b8def;
@@ -455,14 +469,14 @@
     }
 
     input[type="range"]::-moz-range-track {
-      height: 8px;
+      height: 6px;
       border-radius: 999px;
       background: linear-gradient(90deg, rgba(91, 141, 239, 0.7), rgba(255, 255, 255, 0.16));
     }
 
     input[type="range"]::-moz-range-thumb {
-      width: 18px;
-      height: 18px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
       background: #ffffff;
       border: 2px solid #5b8def;
@@ -472,13 +486,13 @@
 
     .pseudo-wrap {
       display: grid;
-      gap: 12px;
+      gap: 8px;
     }
 
     .pseudo-panel {
-      max-height: 340px;
+      max-height: 280px;
       overflow: auto;
-      padding: 10px;
+      padding: 8px;
       background: #050505;
       border: 1px solid var(--line);
       border-radius: 10px;
@@ -488,19 +502,20 @@
 
     .code-line {
       display: grid;
-      grid-template-columns: 34px 1fr;
-      gap: 10px;
+      grid-template-columns: 28px 1fr;
+      gap: 8px;
       align-items: start;
-      padding: 8px 10px;
+      padding: 6px 8px;
       border-radius: 8px;
       color: var(--muted);
       border: 1px dashed transparent;
       transition: background var(--transition), color var(--transition), transform var(--transition), border-color var(--transition);
       cursor: help;
+      font-size: 0.85rem;
     }
 
     .code-line + .code-line {
-      margin-top: 3px;
+      margin-top: 2px;
     }
 
     .code-line.active {
@@ -521,17 +536,54 @@
     }
 
     .explanation-box {
-      min-height: 128px;
+      min-height: 84px;
       border-radius: 10px;
       border: 1px solid var(--line);
-      padding: 16px;
+      padding: 10px 12px;
       background: #050505;
-      line-height: 1.6;
+      line-height: 1.4;
+      font-size: 0.9rem;
+    }
+
+    .step-strip .explanation-box {
+      min-height: 0;
+    }
+
+    .step-details {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.65fr);
+      gap: 8px;
+      align-items: start;
+    }
+
+    .step-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .step-mini-card {
+      background: #0d0d0d;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 10px;
+    }
+
+    .step-mini-card strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+
+    .step-mini-card div {
+      color: var(--muted);
+      line-height: 1.5;
+      word-break: break-word;
     }
 
     .history-wrap {
       overflow: auto;
-      max-height: 330px;
+      max-height: 260px;
       border-radius: 10px;
       border: 1px solid var(--line);
       background: #050505;
@@ -547,10 +599,10 @@
 
     th,
     td {
-      padding: 10px 12px;
+      padding: 7px 8px;
       text-align: left;
       border-bottom: 1px solid rgba(149, 187, 219, 0.12);
-      font-size: 0.92rem;
+      font-size: 0.82rem;
     }
 
     th {
@@ -598,9 +650,9 @@
       display: inline-flex;
       align-items: center;
       border-radius: 8px;
-      padding: 5px 9px;
+      padding: 3px 7px;
       border: 1px solid var(--line);
-      font-size: 0.8rem;
+      font-size: 0.72rem;
       background: #111111;
     }
 
@@ -623,15 +675,15 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 14px;
+      gap: 8px;
       flex-wrap: wrap;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
 
     .chart-note {
-      font-size: 0.86rem;
+      font-size: 0.78rem;
       color: var(--muted);
-      line-height: 1.55;
+      line-height: 1.35;
     }
 
     .impact-grid,
@@ -641,30 +693,31 @@
 
     .callout {
       border-left: 4px solid var(--accent);
-      padding: 12px 14px;
+      padding: 9px 10px;
       background: rgba(77, 183, 167, 0.08);
       border-radius: 0 10px 10px 0;
       color: var(--muted);
-      line-height: 1.55;
+      line-height: 1.35;
+      font-size: 0.84rem;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
     }
 
     .comparison {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
+      gap: 8px;
     }
 
     .comparison > div {
       border: 1px solid var(--line);
       border-radius: 10px;
-      padding: 12px 14px;
+      padding: 8px 10px;
       background: #0d0d0d;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
     }
 
     .footer-note {
-      font-size: 0.84rem;
+      font-size: 0.76rem;
       color: var(--muted);
     }
 
@@ -683,7 +736,7 @@
     }
 
     .small {
-      font-size: 0.85rem;
+      font-size: 0.76rem;
       color: var(--muted);
     }
 
@@ -711,6 +764,14 @@
       }
 
       .visuals {
+        grid-template-columns: 1fr;
+      }
+
+      .step-details {
+        grid-template-columns: 1fr;
+      }
+
+      .step-summary-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -898,7 +959,7 @@
         <svg id="graphSvg" viewBox="0 0 760 420" aria-label="Graph visualization"></svg>
       </section>
 
-      <section class="panel viz-panel">
+      <section class="panel viz-panel wide">
         <div class="viz-copy">
           <div>
             <h2>Sorted Edge Order</h2>
@@ -907,6 +968,35 @@
           <span class="small mono" id="edgeRibbonLabel">Awaiting steps</span>
         </div>
         <svg id="edgeOrderSvg" viewBox="0 0 760 210" aria-label="Edge order"></svg>
+        <div class="viz-copy">
+          <div>
+            <h2>Step Explanation</h2>
+            <p>The explanation for the current step is shown here directly below the sorted edge order.</p>
+          </div>
+          <span class="small" id="phaseLabel">Idle</span>
+        </div>
+        <div class="step-details">
+          <div class="explanation-box" id="explanationBox">Build the steps to start the animation.</div>
+          <div class="callout" id="cutPropertyBox">When the algorithm is ready, this panel will explain the current cut-property reasoning.</div>
+        </div>
+        <div class="step-summary-grid">
+          <div class="step-mini-card">
+            <strong>Current Edge</strong>
+            <div id="currentEdgeInfo">—</div>
+          </div>
+          <div class="step-mini-card">
+            <strong>Current Action</strong>
+            <div id="currentActionInfo">Build the steps first.</div>
+          </div>
+          <div class="step-mini-card">
+            <strong>Current Components</strong>
+            <div id="componentSummaryInfo">Each connected group will be shown here.</div>
+          </div>
+          <div class="step-mini-card">
+            <strong>MST Progress</strong>
+            <div id="mstSummaryInfo">Accepted edges and total weight will be shown here.</div>
+          </div>
+        </div>
       </section>
 
       <section class="panel viz-panel">
@@ -931,18 +1021,6 @@
         <div class="pseudo-wrap">
           <div class="pseudo-panel" id="pseudocodePanel"></div>
         </div>
-      </section>
-
-      <section class="panel viz-panel">
-        <div class="viz-copy">
-          <div>
-            <h2>Step Explanation Box</h2>
-            <p>Plain-English explanation with concrete edge values and component states.</p>
-          </div>
-          <span class="small" id="phaseLabel">Idle</span>
-        </div>
-        <div class="explanation-box" id="explanationBox">Build the steps to start the animation.</div>
-        <div class="callout" id="cutPropertyBox">When the algorithm is ready, this panel will explain the current cut-property reasoning.</div>
       </section>
 
       <section class="panel viz-panel wide">
@@ -1045,6 +1123,10 @@
       historyBody: document.getElementById("historyBody"),
       phaseLabel: document.getElementById("phaseLabel"),
       cutPropertyBox: document.getElementById("cutPropertyBox"),
+      currentEdgeInfo: document.getElementById("currentEdgeInfo"),
+      currentActionInfo: document.getElementById("currentActionInfo"),
+      componentSummaryInfo: document.getElementById("componentSummaryInfo"),
+      mstSummaryInfo: document.getElementById("mstSummaryInfo"),
       edgeRibbonLabel: document.getElementById("edgeRibbonLabel"),
       ufLabel: document.getElementById("ufLabel"),
       growthChartSvg: document.getElementById("growthChartSvg"),
@@ -1780,8 +1862,8 @@
       if (!state.graph) {
         els.graphSvg.innerHTML = `
           <rect x="0" y="0" width="760" height="420" rx="16" fill="transparent"></rect>
-          <text x="380" y="200" text-anchor="middle" fill="var(--text)" font-size="24" font-weight="800">Graph visualization will appear here</text>
-          <text x="380" y="230" text-anchor="middle" fill="var(--muted)" font-size="15">Load a preset or type an edge list, then click Build Steps.</text>
+          <text x="380" y="200" text-anchor="middle" fill="var(--text)" font-size="20" font-weight="800">Graph visualization will appear here</text>
+          <text x="380" y="226" text-anchor="middle" fill="var(--muted)" font-size="13">Load a preset or type an edge list, then click Build Steps.</text>
         `;
         return;
       }
@@ -1801,42 +1883,42 @@
         const dx = to.x - from.x;
         const dy = to.y - from.y;
         const length = Math.hypot(dx, dy) || 1;
-        const offX = -dy / length * 12;
-        const offY = dx / length * 12;
+        const offX = -dy / length * 10;
+        const offY = dx / length * 10;
         let stroke = "rgba(163, 191, 219, 0.34)";
-        let width = 3;
+        let width = 2.5;
         let opacity = 0.92;
         let dash = "";
         if (crossingSet.has(edge.id)) {
           stroke = "rgba(117, 183, 255, 0.54)";
-          width = 4;
+          width = 3;
         }
         if (edge.id === snapshot.cheapestCrossingId) {
           stroke = "var(--focus)";
-          width = 6;
+          width = 4;
         }
         if (compareSet.has(edge.id)) {
           stroke = "var(--violet)";
-          width = 6;
+          width = 4;
         }
         if (edge.id === snapshot.currentEdgeId) {
           stroke = "var(--accent-2)";
-          width = 6;
+          width = 4;
         }
         if (acceptedSet.has(edge.id)) {
           stroke = "var(--good)";
-          width = 7;
+          width = 5;
         }
         if (rejectedSet.has(edge.id)) {
           stroke = "var(--bad)";
-          width = 5;
+          width = 3.5;
           dash = "8 6";
         }
         return `
           <g>
             <line x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" stroke="${stroke}" stroke-width="${width}" stroke-linecap="round" stroke-dasharray="${dash}" opacity="${opacity}" style="transition: all 220ms ease;"></line>
-            <rect x="${midX + offX - 22}" y="${midY + offY - 14}" width="44" height="28" rx="12" fill="rgba(8, 19, 31, 0.95)" stroke="rgba(149, 187, 219, 0.18)"></rect>
-            <text x="${midX + offX}" y="${midY + offY + 5}" text-anchor="middle" fill="var(--text)" font-size="13" font-weight="700">${edge.w}</text>
+            <rect x="${midX + offX - 16}" y="${midY + offY - 11}" width="32" height="22" rx="10" fill="rgba(8, 19, 31, 0.95)" stroke="rgba(149, 187, 219, 0.18)"></rect>
+            <text x="${midX + offX}" y="${midY + offY + 4}" text-anchor="middle" fill="var(--text)" font-size="11" font-weight="700">${edge.w}</text>
           </g>
         `;
       }).join("");
@@ -1846,16 +1928,16 @@
         const inCut = highlightVertices.has(vertex);
         return `
           <g transform="translate(${position.x} ${position.y})">
-            <circle r="28" fill="${inCut ? 'rgba(117, 183, 255, 0.22)' : 'rgba(18, 42, 65, 0.95)'}" stroke="${inCut ? 'var(--focus)' : 'rgba(149, 187, 219, 0.28)'}" stroke-width="${inCut ? 4 : 2}" style="transition: all 220ms ease;"></circle>
-            <text text-anchor="middle" y="6" fill="var(--text)" font-size="18" font-weight="800">${vertex}</text>
+            <circle r="22" fill="${inCut ? 'rgba(117, 183, 255, 0.22)' : 'rgba(18, 42, 65, 0.95)'}" stroke="${inCut ? 'var(--focus)' : 'rgba(149, 187, 219, 0.28)'}" stroke-width="${inCut ? 3 : 2}" style="transition: all 220ms ease;"></circle>
+            <text text-anchor="middle" y="5" fill="var(--text)" font-size="15" font-weight="800">${vertex}</text>
           </g>
         `;
       }).join("");
 
       const currentEdge = lookup.get(snapshot.currentEdgeId);
       const footer = currentEdge
-        ? `<text x="26" y="394" fill="var(--muted)" font-size="14">Current edge: ${escapeHtml(edgeLabel(currentEdge))}</text>`
-        : `<text x="26" y="394" fill="var(--muted)" font-size="14">Build or step through the algorithm to see the graph states.</text>`;
+        ? `<text x="26" y="398" fill="var(--muted)" font-size="12">Current edge: ${escapeHtml(edgeLabel(currentEdge))}</text>`
+        : `<text x="26" y="398" fill="var(--muted)" font-size="12">Build or step through the algorithm to see the graph states.</text>`;
 
       els.graphSvg.innerHTML = `
         <rect x="0" y="0" width="760" height="420" rx="16" fill="transparent"></rect>
@@ -1869,8 +1951,8 @@
       if (!state.graph) {
         els.edgeOrderSvg.innerHTML = `
           <rect x="0" y="0" width="760" height="210" rx="16" fill="transparent"></rect>
-          <text x="380" y="92" text-anchor="middle" fill="var(--text)" font-size="22" font-weight="800">Sorted edge order</text>
-          <text x="380" y="124" text-anchor="middle" fill="var(--muted)" font-size="15">Merge-sort comparisons, writes, and the scan pointer will appear here.</text>
+          <text x="380" y="92" text-anchor="middle" fill="var(--text)" font-size="18" font-weight="800">Sorted edge order</text>
+          <text x="380" y="120" text-anchor="middle" fill="var(--muted)" font-size="13">Merge-sort comparisons, writes, and the scan pointer will appear here.</text>
         `;
         els.edgeRibbonLabel.textContent = "Awaiting steps";
         return;
@@ -1879,9 +1961,9 @@
       const edgeById = new Map(state.graph.edges.map(edge => [edge.id, edge]));
       const count = orderIds.length;
       const gap = Math.max(8, Math.min(18, 28 - count));
-      const boxWidth = Math.max(66, Math.min(106, (720 - (count - 1) * gap) / Math.max(1, count)));
+      const boxWidth = Math.max(56, Math.min(90, (720 - (count - 1) * gap) / Math.max(1, count)));
       const startX = 20;
-      const y = 86;
+      const y = 96;
       const pointerMarkup = [];
       const boxes = orderIds.map((id, index) => {
         const edge = edgeById.get(id);
@@ -1905,23 +1987,23 @@
           stroke = "var(--bad)";
         }
         if (snapshot.pointer.left === index) {
-          pointerMarkup.push(pointerLabel(x + boxWidth / 2, 28, "L", "var(--violet)"));
+          pointerMarkup.push(pointerLabel(x + boxWidth / 2, 34, "L", "var(--violet)"));
         }
         if (snapshot.pointer.right === index) {
-          pointerMarkup.push(pointerLabel(x + boxWidth / 2, 48, "R", "var(--violet)"));
+          pointerMarkup.push(pointerLabel(x + boxWidth / 2, 54, "R", "var(--violet)"));
         }
         if (snapshot.pointer.write === index) {
-          pointerMarkup.push(pointerLabel(x + boxWidth / 2, 168, "W", "var(--accent)"));
+          pointerMarkup.push(pointerLabel(x + boxWidth / 2, 158, "W", "var(--accent)"));
         }
         if (snapshot.pointer.scan === index) {
-          pointerMarkup.push(pointerLabel(x + boxWidth / 2, 168, "i", "var(--accent-2)"));
+          pointerMarkup.push(pointerLabel(x + boxWidth / 2, 158, "i", "var(--accent-2)"));
         }
         return `
           <g transform="translate(${x} ${y})" style="transition: all 220ms ease;">
-            <rect width="${boxWidth}" height="62" rx="14" fill="${fill}" stroke="${stroke}" stroke-width="2"></rect>
-            <text x="${boxWidth / 2}" y="24" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="700">${edge.u}-${edge.v}</text>
-            <text x="${boxWidth / 2}" y="45" text-anchor="middle" fill="var(--muted)" font-size="13">w=${edge.w}</text>
-            <text x="${boxWidth / 2}" y="80" text-anchor="middle" fill="rgba(156, 183, 209, 0.72)" font-size="12">${index + 1}</text>
+            <rect width="${boxWidth}" height="50" rx="12" fill="${fill}" stroke="${stroke}" stroke-width="2"></rect>
+            <text x="${boxWidth / 2}" y="20" text-anchor="middle" fill="var(--text)" font-size="11" font-weight="700">${edge.u}-${edge.v}</text>
+            <text x="${boxWidth / 2}" y="37" text-anchor="middle" fill="var(--muted)" font-size="10">w=${edge.w}</text>
+            <text x="${boxWidth / 2}" y="68" text-anchor="middle" fill="rgba(156, 183, 209, 0.72)" font-size="10">${index + 1}</text>
           </g>
         `;
       }).join("");
@@ -1932,7 +2014,7 @@
       els.edgeRibbonLabel.textContent = caption;
       els.edgeOrderSvg.innerHTML = `
         <rect x="0" y="0" width="760" height="210" rx="16" fill="transparent"></rect>
-        <text x="22" y="26" fill="var(--muted)" font-size="14">${caption}</text>
+        <text x="22" y="24" fill="var(--muted)" font-size="12">${caption}</text>
         ${boxes}
         ${pointerMarkup.join("")}
       `;
@@ -1941,8 +2023,8 @@
     function pointerLabel(x, y, label, color) {
       return `
         <g>
-          <text x="${x}" y="${y}" text-anchor="middle" fill="${color}" font-size="15" font-weight="800">${label}</text>
-          <line x1="${x}" y1="${y + 5}" x2="${x}" y2="${y + 25}" stroke="${color}" stroke-width="2"></line>
+          <text x="${x}" y="${y}" text-anchor="middle" fill="${color}" font-size="13" font-weight="800">${label}</text>
+          <line x1="${x}" y1="${y + 4}" x2="${x}" y2="${y + 18}" stroke="${color}" stroke-width="2"></line>
         </g>
       `;
     }
@@ -2051,11 +2133,40 @@
     }
 
     function renderExplanation(snapshot) {
+      const edgeLookup = state.graph ? new Map(state.graph.edges.map(edge => [edge.id, edge])) : new Map();
+      const currentEdge = edgeLookup.get(snapshot.currentEdgeId);
+      const acceptedSet = new Set(snapshot.acceptedIds);
+      const rejectedSet = new Set(snapshot.rejectedIds);
+      const acceptedLabels = snapshot.acceptedIds.map(id => edgeLabel(edgeLookup.get(id)));
+      const componentText = snapshot.components.length
+        ? snapshot.components.map(component => `{${component.members.join(", ")}}`).join("   ")
+        : "—";
+      let actionText = "Waiting to begin.";
+      if (snapshot.phase === "sorting") {
+        actionText = "Sorting the edge list before the greedy scan starts.";
+      } else if (snapshot.phase === "setup") {
+        actionText = "Initializing Union-Find and the empty MST.";
+      } else if (snapshot.phase === "scan") {
+        actionText = currentEdge ? `Checking whether ${edgeLabel(currentEdge)} is safe to use.` : "Scanning the sorted edge list.";
+      } else if (snapshot.phase === "decision" && currentEdge && acceptedSet.has(currentEdge.id)) {
+        actionText = `${edgeLabel(currentEdge)} is accepted because it connects two different components.`;
+      } else if (snapshot.phase === "decision" && currentEdge && rejectedSet.has(currentEdge.id)) {
+        actionText = `${edgeLabel(currentEdge)} is rejected because it would create a cycle.`;
+      } else if (snapshot.phase === "done") {
+        actionText = "The MST is complete because it already has V-1 accepted edges.";
+      }
+
       els.explanationBox.innerHTML = `
         <strong style="display:block; margin-bottom:8px; color: var(--text);">Step ${snapshot.step + 1}</strong>
         <span>${escapeHtml(snapshot.explanation)}</span>
       `;
       els.cutPropertyBox.textContent = snapshot.cutText;
+      els.currentEdgeInfo.textContent = currentEdge ? edgeLabel(currentEdge) : "No current edge";
+      els.currentActionInfo.textContent = actionText;
+      els.componentSummaryInfo.textContent = componentText;
+      els.mstSummaryInfo.textContent = acceptedLabels.length
+        ? `${acceptedLabels.join(", ")}. Total weight = ${snapshot.mstWeight}.`
+        : `No edges accepted yet. Current total weight = ${snapshot.mstWeight}.`;
     }
 
     function renderCounters(snapshot) {
