@@ -2127,7 +2127,16 @@
         const active = Number(line.dataset.line) === snapshot.line;
         line.classList.toggle("active", active);
         if (active) {
-          line.scrollIntoView({ block: "nearest", behavior: "smooth" });
+          const panel = els.pseudocodePanel;
+          const lineTop = line.offsetTop;
+          const lineBottom = lineTop + line.offsetHeight;
+          const viewTop = panel.scrollTop;
+          const viewBottom = viewTop + panel.clientHeight;
+          if (lineTop < viewTop) {
+            panel.scrollTo({ top: Math.max(0, lineTop - 12), behavior: "smooth" });
+          } else if (lineBottom > viewBottom) {
+            panel.scrollTo({ top: lineBottom - panel.clientHeight + 12, behavior: "smooth" });
+          }
         }
       });
     }
